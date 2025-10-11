@@ -1,0 +1,18 @@
+# Ignore plain secrets directory (never commit unencrypted secrets)
+secrets-temp/
+
+# Ignore any .pem files except the public cert if you decide to commit it
+# But if only the public cert is safe, you might whitelist it:
+*.pem
+!argo/secrets/pub-sealed-secrets.pem
+
+# Editor / OS junk files
+*.swp
+*.bak
+.DS_Store
+.idea/
+.vscode/
+
+# Logs or temporary files (if any)
+*.log
+tmp/

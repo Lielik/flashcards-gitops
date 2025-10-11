@@ -1,0 +1,14 @@
+# Exposes the Flashcards Deployment as a ClusterIP service on port 80.
+apiVersion: v1
+kind: Service
+metadata:
+  name: flashcards
+  labels: { app: flashcards }
+spec:
+  selector: { app: flashcards }
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: http
+  type: {{ .Values.service.type }}

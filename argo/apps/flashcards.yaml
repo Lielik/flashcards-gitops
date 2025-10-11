@@ -1,0 +1,25 @@
+# Child Application: deploys the Flashcards app using the local Helm chart.
+# This depends on MongoDB and runs afterward (sync-wave 1).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flashcards
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  project: portfolio-apps
+  source:
+    repoURL: https://gitlab.com/portfolio5815640/flashcards-gitops.git
+    targetRevision: main
+    path: charts/flashcards
+    helm:
+      valueFiles:
+        - ../../envs/dev/values-flashcards.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
