@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  ports:
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 8080   # or whatever the container port is
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: argocd-server

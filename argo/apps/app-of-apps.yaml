@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://gitlab.com/portfolio5815640/flashcards-gitops.git
     targetRevision: main
-    path: argo # includes both apps/ and secrets/
+    path: argo # includes both apps/ ingress/ and secrets/
 
   destination:
     server: https://kubernetes.default.svc
