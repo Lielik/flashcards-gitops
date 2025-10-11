@@ -1,0 +1,39 @@
+# Default Helm values for the Flashcards app.
+# Jenkins updates the image.tag here via the GitOps flow after pushing a new build.
+image:
+  repository: ""
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+replicaCount: 2
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 5000
+
+ingress:
+  enabled: true
+  className: nginx
+  host: flashcards.com
+  path: /
+  tls: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+env:
+  - name: MONGO_URI
+    value: "mongodb://mongodb.databases.svc.cluster.local:27017/flashcards"
+
+readinessProbe:
+  path: /health
+  port: 5000
+livenessProbe:
+  path: /health
+  port: 5000

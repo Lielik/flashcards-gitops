@@ -1,14 +1,24 @@
+# Creates the Kubernetes namespaces used in this environment:
+# - argocd: for Argo CD components
+# - apps: for the Flashcards application
+# - databases: for MongoDB and other data services
+
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: app
+  name: apps
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: database
+  name: databases
 ---
 apiVersion: v1
 kind: Namespace
 metadata:
   name: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sealed-secrets

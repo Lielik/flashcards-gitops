@@ -1,0 +1,26 @@
+# Defines an Argo CD AppProject.
+# This limits which repositories and namespaces the Applications in this project can use.
+# It acts as a security boundary and logical grouping for your portfolio apps.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: portfolio-apps
+  namespace: argocd
+spec:
+  description: Flashcards app and dependencies
+  sourceRepos:
+    - https://gitlab.com/portfolio5815640/flashcards-gitops.git
+    - https://charts.bitnami.com/bitnami
+  # Deploys these manifests into the same cluster where Argo CD is currently running
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: apps
+    - server: https://kubernetes.default.svc
+      namespace: databases
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: true
