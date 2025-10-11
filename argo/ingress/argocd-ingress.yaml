@@ -10,7 +10,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   rules:
-    - host: argocd.portfolio.com       # <-- change to your domain
+    - host: argocd.portfolio.com       
       http:
         paths:
           - path: /
