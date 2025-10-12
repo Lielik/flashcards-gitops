@@ -1,7 +1,5 @@
-# Default Helm values for the Flashcards app.
-# Jenkins updates the image.tag here via the GitOps flow after pushing a new build.
 image:
-  repository: ""
+  repository: ""            # e.g. 4739....amazonaws.com/flashcards-app
   tag: "latest"
   pullPolicy: IfNotPresent
 
@@ -15,9 +13,9 @@ service:
 ingress:
   enabled: true
   className: nginx
-  host: flashcards.com
+  host: flashcards.portfolio.com   
   path: /
-  tls: []
+  tls: []                   
 
 resources:
   requests:
@@ -29,7 +27,10 @@ resources:
 
 env:
   - name: MONGO_URI
-    value: "mongodb://mongodb.databases.svc.cluster.local:27017/flashcards"
+    valueFrom:
+      secretKeyRef:
+        name: mongo-uri
+        key: uri
 
 readinessProbe:
   path: /health

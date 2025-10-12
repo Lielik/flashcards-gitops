@@ -1,6 +1,0 @@
-# Environment-specific overrides for the Flashcards app (dev environment).
-# Jenkins updates the image tag here during CI/CD to trigger a new deployment.
-image:
-  repository: "${AWS_ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com/flashcards-app"
-  tag: "0.1.0"
-
