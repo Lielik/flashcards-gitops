@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform-and-apps
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: ingress-nginx
+            chartRepo: https://kubernetes.github.io/ingress-nginx
+            chartName: ingress-nginx
+            chartVersion: 4.13.3
+            namespace: ingress-nginx
+          - name: sealed-secrets
+            chartRepo: https://bitnami-labs.github.io/sealed-secrets
+            chartName: sealed-secrets
+            chartVersion: 2.16.1
+            namespace: sealed-secrets
+          - name: umbrella
+            gitRepo: https://gitlab.com/portfolio5815640/flashcards-gitops.git
+            path: charts/umbrella
+            namespace: apps
+  template:
+    metadata:
+      name: '{{name}}'
+    spec:
+      project: portfolio-apps
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{namespace}}'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+        automated:
+          prune: true
+          selfHeal: true
+      source:
+        # Two modes: chart or git path (selected by parameters below)
+        repoURL: '{{ chartRepo | default gitRepo }}'
+        targetRevision: '{{ chartVersion | default "main" }}'
+        chart: '{{ chartName | default "" }}'
+        path: '{{ path | default "" }}'
+        helm:
+          valueFiles:
+            - values.yaml

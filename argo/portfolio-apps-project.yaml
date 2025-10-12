@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: portfolio-apps
+  namespace: argocd
+spec:
+  description: Flashcards app and dependencies
+  sourceRepos:
+    - https://gitlab.com/portfolio5815640/flashcards-gitops.git
+    - https://argoproj.github.io/argo-helm
+    - https://charts.bitnami.com/bitnami
+    - https://kubernetes.github.io/ingress-nginx
+    - https://bitnami-labs.github.io/sealed-secrets
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+    - server: https://kubernetes.default.svc
+      namespace: apps
+    - server: https://kubernetes.default.svc
+      namespace: databases
+    - server: https://kubernetes.default.svc
+      namespace: ingress-nginx
+    - server: https://kubernetes.default.svc
+      namespace: sealed-secrets
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: true
