@@ -8,17 +8,17 @@ spec:
   generators:
     - list:
         elements:
-          - name: ingress-nginx
-            namespace: ingress-nginx
-            chartName: ingress-nginx
-            chartRepo: https://kubernetes.github.io/ingress-nginx
-            chartVersion: 4.13.3
-            wave: "-2"
           - name: sealed-secrets
             namespace: sealed-secrets
             chartName: sealed-secrets
             chartRepo: https://bitnami-labs.github.io/sealed-secrets
             chartVersion: 2.17.7
+            wave: "-2"
+          - name: ingress-nginx
+            namespace: ingress-nginx
+            chartName: ingress-nginx
+            chartRepo: https://kubernetes.github.io/ingress-nginx
+            chartVersion: 4.13.3
             wave: "-1"
           - name: flashcards
             namespace: apps
@@ -28,38 +28,31 @@ spec:
 
   template:
     metadata:
-      name: "platform-{{ .name }}"
+      name: "platform-{{`{{ .name }}`}}"
       annotations:
-        argocd.argoproj.io/sync-wave: "{{ .wave }}"
+        argocd.argoproj.io/sync-wave: "{{`{{ .wave }}`}}"
     spec:
       project: default
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{ .namespace }}"
-      
+        namespace: "{{`{{ .namespace }}`}}"
       source:
-        {{- if .chartName }}
-        repoURL: "{{ .chartRepo }}"
-        chart: "{{ .chartName }}"
-        targetRevision: "{{ .chartVersion }}"
+        {{`{{- if .chartName }}`}}
+        repoURL: "{{`{{ .chartRepo }}`}}"
+        chart: "{{`{{ .chartName }}`}}"
+        targetRevision: "{{`{{ .chartVersion }}`}}"
         helm:
-          {{- if eq .name "ingress-nginx" }}
+          {{`{{- if eq .name "ingress-nginx" }}`}}
           values: |
             controller:
-              service:
-                type: LoadBalancer
-                annotations:
-                  service.beta.kubernetes.io/aws-load-balancer-type: nlb
-                  service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
               extraArgs:
                 enable-ssl-passthrough: "true"
-          {{- end }}
-        {{- else }}
-        repoURL: "{{ .gitRepo }}"
-        path: "{{ .path }}"
+          {{`{{- end }}`}}
+        {{`{{- else }}`}}
+        repoURL: "{{`{{ .gitRepo }}`}}"
+        path: "{{`{{ .path }}`}}"
         targetRevision: "main"
-        {{- end }}
-      
+        {{`{{- end }}`}}
       syncPolicy:
         automated:
           prune: true
