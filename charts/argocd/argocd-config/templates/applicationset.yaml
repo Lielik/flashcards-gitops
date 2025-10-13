@@ -1,0 +1,96 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform-and-apps
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"  # Create after AppProject
+spec:
+  # List generator - explicitly lists each application to deploy
+  generators:
+    - list:
+        elements:
+          # Platform component: Ingress NGINX Controller
+          - name: ingress-nginx
+            chartRepo: {{ .Values.applicationSet.components.ingressNginx.chartRepo }}
+            chartName: {{ .Values.applicationSet.components.ingressNginx.chartName }}
+            chartVersion: {{ .Values.applicationSet.components.ingressNginx.chartVersion | quote }}
+            namespace: {{ .Values.applicationSet.components.ingressNginx.namespace }}
+            wave: {{ .Values.applicationSet.syncWaves.ingressNginx | quote }}
+          
+          # Platform component: Sealed Secrets Controller
+          - name: sealed-secrets
+            chartRepo: {{ .Values.applicationSet.components.sealedSecrets.chartRepo }}
+            chartName: {{ .Values.applicationSet.components.sealedSecrets.chartName }}
+            chartVersion: {{ .Values.applicationSet.components.sealedSecrets.chartVersion | quote }}
+            namespace: {{ .Values.applicationSet.components.sealedSecrets.namespace }}
+            wave: {{ .Values.applicationSet.syncWaves.sealedSecrets | quote }}
+          
+          # Application: Flashcards Umbrella Chart
+          - name: umbrella
+            gitRepo: {{ .Values.applicationSet.components.flashcardsApp.gitRepo }}
+            path: {{ .Values.applicationSet.components.flashcardsApp.path }}
+            namespace: {{ .Values.applicationSet.components.flashcardsApp.namespace }}
+            wave: {{ .Values.applicationSet.syncWaves.application | quote }}
+  
+  # Template for creating Application resources
+  template:
+    metadata:
+      name: '{{`{{name}}`}}'
+      annotations:
+        # Sync wave controls deployment order (lower numbers deploy first)
+        argocd.argoproj.io/sync-wave: '{{`{{wave}}`}}'
+    
+    spec:
+      # Use the portfolio-apps project we created
+      project: {{ .Values.appProject.name }}
+      
+      # Destination cluster and namespace
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{`{{namespace}}`}}'
+      
+      # Sync policy - automatically sync and create namespaces
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+        automated:
+          prune: true      # Delete resources not in Git
+          selfHeal: true   # Automatically sync if resources drift
+      
+      # Source repository configuration
+      source:
+        # Use chartRepo for Helm charts or gitRepo for Git repositories
+        repoURL: '{{`{{ chartRepo | default gitRepo }}`}}'
+        
+        # For Helm charts: use chartVersion; for Git: use "main" branch
+        targetRevision: '{{`{{ chartVersion | default "main" }}`}}'
+        
+        # For Helm charts: specify chart name
+        chart: '{{`{{ chartName | default "" }}`}}'
+        
+        # For Git repositories: specify path to chart
+        path: '{{`{{ path | default "" }}`}}'
+        
+        # Helm configuration
+        helm:
+          valueFiles:
+            - values.yaml
+          
+          # Component-specific value overrides
+          values: |
+            {{`{{- if eq name "ingress-nginx" }}`}}
+            # Enable SSL passthrough for ArgoCD
+            controller:
+              extraArgs:
+                enable-ssl-passthrough: "true"
+            {{`{{- end }}`}}
+            
+            {{`{{- if eq name "sealed-secrets" }}`}}
+            # Sealed Secrets uses default values
+            {{`{{- end }}`}}
+            
+            {{`{{- if eq name "umbrella" }}`}}
+            # Flashcards app configuration
+            # Values from umbrella chart's values.yaml will be used
+            {{`{{- end }}`}}

@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ .Values.appProject.name }}
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"  # Create early but after namespace
+spec:
+  description: {{ .Values.appProject.description }}
+  
+  # Source repositories that applications in this project can pull from
+  sourceRepos:
+    {{- range .Values.appProject.sourceRepos }}
+    - {{ . | quote }}
+    {{- end }}
+  
+  # Destinations where applications can be deployed
+  destinations:
+    {{- range .Values.appProject.destinations }}
+    - server: https://kubernetes.default.svc
+      namespace: {{ .namespace }}
+    {{- end }}
+  
+  # Allow all cluster resources
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  
+  # Warn about orphaned resources (not auto-delete)
+  orphanedResources:
+    warn: true

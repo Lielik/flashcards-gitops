@@ -1,6 +1,0 @@
-# Helm chart metadata for the Flashcards app.
-# Defines chart name, version, and type so Helm/ArgoCD can deploy it.
-apiVersion: v2
-name: flashcards
-version: 0.1.0
-type: application

@@ -1,0 +1,171 @@
+# ==========================================================
+# Flashcards Umbrella Chart Values
+# ==========================================================
+# This configures both the application and MongoDB database
+
+# Global values accessible by all subcharts
+global:
+  # Image configuration
+  image:
+    registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
+    repository: "flashcards-app"
+    tag: "latest"
+    pullPolicy: Always
+  
+  # MongoDB connection details
+  mongodb:
+    host: "mongodb-service.databases.svc.cluster.local"
+    port: 27017
+    database: "flashcards"
+    # Authentication credentials come from sealed secret
+
+# ==========================================================
+# Flashcards Application Configuration
+# ==========================================================
+flashcards-app:
+  enabled: true
+  
+  # Deployment configuration
+  replicaCount: 2
+  
+  # Image configuration (inherits from global)
+  image:
+    registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
+    repository: "flashcards-app"
+    tag: "latest"
+    pullPolicy: Always
+  
+  # Resource limits and requests
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  
+  # Health check configuration
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 5000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 5000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 5000
+    targetPort: 5000
+  
+  # Ingress configuration
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: flashcards.portfolio.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: flashcards-tls
+        hosts:
+          - flashcards.portfolio.com
+  
+  # Environment variables
+  env:
+    - name: PORT
+      value: "5000"
+    - name: DEBUG
+      value: "false"
+    # MONGO_URI comes from sealed secret
+  
+  # Sealed secret for MongoDB connection string
+  sealedSecret:
+    enabled: true
+    name: mongo-uri
+
+# ==========================================================
+# MongoDB Configuration
+# ==========================================================
+mongodb:
+  enabled: true
+  
+  # MongoDB image
+  image:
+    registry: docker.io
+    repository: mongo
+    tag: "7.0"
+    pullPolicy: IfNotPresent
+  
+  # Resource configuration
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+  
+  # Persistence configuration
+  persistence:
+    enabled: true
+    storageClass: "gp2"  # AWS EBS GP2
+    size: 10Gi
+    accessMode: ReadWriteOnce
+  
+  # Service configuration
+  service:
+    type: ClusterIP
+    port: 27017
+    targetPort: 27017
+    name: mongodb-service
+  
+  # MongoDB configuration
+  config:
+    database: "flashcards"
+  
+  # Sealed secret for MongoDB credentials
+  sealedSecret:
+    enabled: true
+    name: mongo-credentials
+  
+  # Health check configuration
+  livenessProbe:
+    exec:
+      command:
+        - mongosh
+        - --eval
+        - "db.adminCommand('ping')"
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  
+  readinessProbe:
+    exec:
+      command:
+        - mongosh
+        - --eval
+        - "db.adminCommand('ping')"
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+
+
+
+
+

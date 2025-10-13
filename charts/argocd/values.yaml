@@ -1,0 +1,117 @@
+# ==========================================================
+# ArgoCD Umbrella Chart Values
+# ==========================================================
+# This file configures both the official ArgoCD chart and 
+# our custom configuration subchart
+
+# Global values that can be used by all subcharts
+global:
+  domain: "argocd.portfolio.com"
+
+# ==========================================================
+# Official ArgoCD Chart Configuration
+# ==========================================================
+argo-cd:
+  enabled: true
+  
+  # ArgoCD version
+  global:
+    image:
+      tag: v3.1.8
+  
+  # Install CRDs
+  crds:
+    install: true
+  
+  # Enable ApplicationSet controller
+  applicationSet:
+    enabled: true
+  
+  # Server configuration
+  server:
+    # Ingress configuration for ArgoCD UI
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - argocd.portfolio.com
+      tls:
+        - secretName: argocd-server-tls  # Sealed secret will create this
+          hosts:
+            - argocd.portfolio.com
+      annotations:
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    
+    # Extra args for SSL passthrough support
+    extraArgs:
+      - --insecure  # Since we're terminating SSL at ingress
+
+  # Redis configuration (required by ArgoCD)
+  redis:
+    enabled: true
+
+  # Repo server configuration
+  repoServer:
+    replicas: 1
+
+# ==========================================================
+# Custom ArgoCD Configuration Subchart
+# ==========================================================
+argocd-config:
+  enabled: true
+  
+  # GitOps repository configuration
+  gitopsRepo:
+    url: "https://gitlab.com/portfolio5815640/flashcards-gitops.git"
+    # Credentials will be provided by sealed secret
+  
+  # ApplicationSet configuration
+  applicationSet:
+    # Sync wave for platform components
+    syncWaves:
+      ingressNginx: "-2"
+      sealedSecrets: "-1"
+      application: "0"
+    
+    # Platform component versions
+    components:
+      ingressNginx:
+        chartRepo: "https://kubernetes.github.io/ingress-nginx"
+        chartName: "ingress-nginx"
+        chartVersion: "4.13.3"
+        namespace: "ingress-nginx"
+      
+      sealedSecrets:
+        chartRepo: "https://bitnami-labs.github.io/sealed-secrets"
+        chartName: "sealed-secrets"
+        chartVersion: "2.17.7"
+        namespace: "sealed-secrets"
+      
+      flashcardsApp:
+        gitRepo: "https://gitlab.com/portfolio5815640/flashcards-gitops.git"
+        path: "charts/umbrella"
+        namespace: "apps"
+
+  # AppProject configuration
+  appProject:
+    name: "portfolio-apps"
+    description: "Flashcards app and dependencies"
+    sourceRepos:
+      - "https://gitlab.com/portfolio5815640/flashcards-gitops.git"
+      - "https://argoproj.github.io/argo-helm"
+      - "https://charts.bitnami.com/bitnami"
+      - "https://kubernetes.github.io/ingress-nginx"
+      - "https://bitnami-labs.github.io/sealed-secrets"
+    destinations:
+      - namespace: "argocd"
+      - namespace: "apps"
+      - namespace: "databases"
+      - namespace: "ingress-nginx"
+      - namespace: "sealed-secrets"
+
+
+
+
+
+

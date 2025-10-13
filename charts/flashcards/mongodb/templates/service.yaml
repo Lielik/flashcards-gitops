@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  namespace: {{ .Values.namespace | default "databases" }}
+  labels:
+    {{- include "mongodb.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  clusterIP: None  # Headless service for StatefulSet
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: TCP
+      name: mongodb
+  selector:
+    {{- include "mongodb.selectorLabels" . | nindent 4 }}
+
+---
+# Helper template definitions
+{{- define "mongodb.labels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{- define "mongodb.selectorLabels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
