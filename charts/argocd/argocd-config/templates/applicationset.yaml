@@ -4,7 +4,7 @@ metadata:
   name: platform-and-apps
   namespace: argocd
 spec:
-  goTemplate: true
+  goTemplate: true  # ✅ CRITICAL: Enable Go templating
   generators:
     - list:
         elements:
@@ -28,31 +28,34 @@ spec:
 
   template:
     metadata:
-      name: "platform-{{`{{ .name }}`}}"
+      name: "platform-{{ .name }}"  # ✅ Proper Go template
       annotations:
-        argocd.argoproj.io/sync-wave: "{{`{{ .wave }}`}}"
+        argocd.argoproj.io/sync-wave: "{{ .wave }}"  # ✅ Proper Go template
     spec:
       project: portfolio-apps
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{`{{ .namespace }}`}}"
+        namespace: "{{ .namespace }}"  # ✅ Proper Go template
+      
       source:
-        {{`{{- if .chartName }}`}}
-        repoURL: "{{`{{ .chartRepo }}`}}"
-        chart: "{{`{{ .chartName }}`}}"
-        targetRevision: "{{`{{ .chartVersion }}`}}"
+        # ✅ Proper Go template conditional
+        {{- if .chartName }}
+        repoURL: "{{ .chartRepo }}"
+        chart: "{{ .chartName }}"
+        targetRevision: "{{ .chartVersion }}"
         helm:
-          {{`{{- if eq .name "ingress-nginx" }}`}}
+          {{- if eq .name "ingress-nginx" }}
           values: |
             controller:
               extraArgs:
                 enable-ssl-passthrough: "true"
-          {{`{{- end }}`}}
-        {{`{{- else }}`}}
-        repoURL: "{{`{{ .gitRepo }}`}}"
-        path: "{{`{{ .path }}`}}"
+          {{- end }}
+        {{- else }}
+        repoURL: "{{ .gitRepo }}"
+        path: "{{ .path }}"
         targetRevision: "main"
-        {{`{{- end }}`}}
+        {{- end }}
+      
       syncPolicy:
         automated:
           prune: true
