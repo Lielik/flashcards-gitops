@@ -15,5 +15,5 @@ dependencies:
   # Custom configuration subchart (local subchart)
   - name: argocd-config
     version: 1.0.0
-    repository: file://./charts/argocd-config
+    repository: file://./argocd-config 
     condition: argocd-config.enabled
