@@ -27,7 +27,7 @@ spec:
             wave: {{ .Values.applicationSet.syncWaves.sealedSecrets | quote }}
           
           # Application: Flashcards Umbrella Chart
-          - name: umbrella
+          - name: flashcards
             gitRepo: {{ .Values.applicationSet.components.flashcardsApp.gitRepo }}
             path: {{ .Values.applicationSet.components.flashcardsApp.path }}
             namespace: {{ .Values.applicationSet.components.flashcardsApp.namespace }}

@@ -29,7 +29,7 @@ applicationSet:
     
     flashcardsApp:
       gitRepo: "https://gitlab.com/portfolio5815640/flashcards-gitops.git"
-      path: "charts/umbrella"
+      path: "charts/flashcards"
       namespace: "apps"
 
 # AppProject configuration
