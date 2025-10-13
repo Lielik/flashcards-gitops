@@ -28,31 +28,43 @@ spec:
 
   template:
     metadata:
-      name: "platform-{{name}}"
+      # Helm must pass Argo's template through verbatim:
+      name: 'platform-{{`{{ .name }}`}}'
       annotations:
-        argocd.argoproj.io/sync-wave: "{{wave}}"
+        argocd.argoproj.io/sync-wave: '{{`{{ .wave }}`}}'
     spec:
       project: portfolio-apps
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{namespace}}"
+        namespace: '{{`{{ .namespace }}`}}'
+
+      # Choose source type based on whether chartName is provided
       source:
-        chart: "{{ chartName | default \"\" }}"
-        repoURL: "{{ chartRepo | default gitRepo }}"
-        path: "{{ path | default \"\" }}"
-        targetRevision: "{{ chartVersion | default \"main\" }}"
+        {{`{{- if .chartName }}`}}
+        repoURL: '{{`{{ .chartRepo }}`}}'
+        chart: '{{`{{ .chartName }}`}}'
+        targetRevision: '{{`{{ .chartVersion }}`}}'
         helm:
           valueFiles:
             - values.yaml
           values: |
-            {{- if eq name "ingress-nginx" }}
+            {{`{{- if eq .name "ingress-nginx" }}`}}
             controller:
               extraArgs:
                 enable-ssl-passthrough: "true"
-            {{- end }}
-            {{- if eq name "sealed-secrets" }}
+            {{`{{- end }}`}}
+            {{`{{- if eq .name "sealed-secrets" }}`}}
             # (defaults)
-            {{- end }}
+            {{`{{- end }}`}}
+        {{`{{- else }}`}}
+        repoURL: '{{`{{ .gitRepo }}`}}'
+        path: '{{`{{ .path }}`}}'
+        targetRevision: 'main'
+        helm:
+          valueFiles:
+            - values.yaml
+        {{`{{- end }}`}}
+
       syncPolicy:
         automated:
           prune: true
