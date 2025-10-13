@@ -38,7 +38,6 @@ spec:
     metadata:
       name: '{{ .name }}'
       annotations:
-        {{- /* order: ingress(-2) -> sealed-secrets(-1) -> apps(0) */ -}}
         {{- if eq .name "ingress-nginx" }}
         argocd.argoproj.io/sync-wave: "{{ $.Values.applicationSet.syncWaves.ingressNginx }}"
         {{- else if eq .name "sealed-secrets" }}
@@ -46,7 +45,6 @@ spec:
         {{- else }}
         argocd.argoproj.io/sync-wave: "{{ $.Values.applicationSet.syncWaves.application }}"
         {{- end }}
-    
     spec:
       # Use the portfolio-apps project we created
       project: {{ .Values.appProject.name }}
