@@ -1,0 +1,34 @@
+.
+├── charts
+│   ├── argocd
+│   │   ├── argocd-config
+│   │   │   ├── Chart.yaml
+│   │   │   ├── templates
+│   │   │   │   ├── applicationset.yaml
+│   │   │   │   ├── appproject.yaml
+│   │   │   │   ├── namespace.yaml
+│   │   │   │   └── sealed-secrets
+│   │   │   │       ├── argocd-tls.yaml
+│   │   │   │       └── gitops-repo.yaml
+│   │   │   └── values.yaml
+│   │   ├── Chart.yaml
+│   │   └── values.yaml
+│   └── flashcards
+│       ├── Chart.yaml
+│       ├── mongodb
+│       │   ├── Chart.yaml
+│       │   └── templates
+│       │       ├── sealed-secrets
+│       │       │   └── sealed-secret-mongo-credentials.yaml
+│       │       ├── service.yaml
+│       │       └── statefulset.yaml
+│       ├── templates
+│       │   ├── deployment.yaml
+│       │   ├── ingress.yaml
+│       │   ├── sealed-secrets
+│       │   │   └── sealed-secret-mongo-uri.yaml
+│       │   └── service.yaml
+│       └── values.yaml
+└── README.md
+
+12 directories, 20 files
