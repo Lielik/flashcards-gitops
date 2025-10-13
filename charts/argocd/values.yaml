@@ -12,46 +12,50 @@ global:
 # Official ArgoCD Chart Configuration
 # ==========================================================
 argo-cd:
-  enabled: false
+  enabled: true
   
-  # ArgoCD version
   global:
     image:
       tag: v3.1.8
   
-  # Install CRDs
   crds:
     install: true
   
-  # Enable ApplicationSet controller
   applicationSet:
     enabled: true
   
-  # Server configuration
   server:
-    # Ingress configuration for ArgoCD UI
+    # Add these CORS settings
+    extraArgs:
+      - --insecure
+    
+    # Add this config section
+    config:
+      # Allow CORS from the LoadBalancer URL
+      cors.enabled: true
+      cors.allowed.origins: "*"  # For development - restrict in production
+    
     ingress:
       enabled: true
       ingressClassName: nginx
       hosts:
         - argocd.portfolio.com
       tls:
-        - secretName: argocd-server-tls  # Sealed secret will create this
+        - secretName: argocd-server-tls
           hosts:
             - argocd.portfolio.com
       annotations:
         nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    
-    # Extra args for SSL passthrough support
-    extraArgs:
-      - --insecure  # Since we're terminating SSL at ingress
+        # Add CORS annotations for Ingress
+        nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+        nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+        nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+        nginx.ingress.kubernetes.io/enable-cors: "true"
 
-  # Redis configuration (required by ArgoCD)
   redis:
     enabled: true
 
-  # Repo server configuration
   repoServer:
     replicas: 1
 

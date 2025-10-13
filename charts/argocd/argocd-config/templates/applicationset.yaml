@@ -4,7 +4,7 @@ metadata:
   name: platform-and-apps
   namespace: argocd
 spec:
-  goTemplate: true  # ✅ CRITICAL: Enable Go templating
+  goTemplate: true 
   generators:
     - list:
         elements:
@@ -28,17 +28,16 @@ spec:
 
   template:
     metadata:
-      name: "platform-{{ .name }}"  # ✅ Proper Go template
+      name: "platform-{{ .name }}"  
       annotations:
-        argocd.argoproj.io/sync-wave: "{{ .wave }}"  # ✅ Proper Go template
+        argocd.argoproj.io/sync-wave: "{{ .wave }}"  
     spec:
       project: portfolio-apps
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{ .namespace }}"  # ✅ Proper Go template
+        namespace: "{{ .namespace }}"  
       
       source:
-        # ✅ Proper Go template conditional
         {{- if .chartName }}
         repoURL: "{{ .chartRepo }}"
         chart: "{{ .chartName }}"
