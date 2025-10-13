@@ -9,51 +9,50 @@ spec:
     - list:
         elements:
           - name: ingress-nginx
-            type: helm
-            repoURL: {{ .Values.applicationSet.components.ingressNginx.chartRepo | quote }}
-            chart: {{ .Values.applicationSet.components.ingressNginx.chartName | quote }}
-            version: {{ .Values.applicationSet.components.ingressNginx.chartVersion | quote }}
-            namespace: {{ .Values.applicationSet.components.ingressNginx.namespace | quote }}
-            wave: {{ .Values.applicationSet.syncWaves.ingressNginx | quote }}
-
+            namespace: ingress-nginx
+            chartName: ingress-nginx
+            chartRepo: https://kubernetes.github.io/ingress-nginx
+            chartVersion: 4.13.3
+            wave: "-2"
           - name: sealed-secrets
-            type: helm
-            repoURL: {{ .Values.applicationSet.components.sealedSecrets.chartRepo | quote }}
-            chart: {{ .Values.applicationSet.components.sealedSecrets.chartName | quote }}
-            version: {{ .Values.applicationSet.components.sealedSecrets.chartVersion | quote }}
-            namespace: {{ .Values.applicationSet.components.sealedSecrets.namespace | quote }}
-            wave: {{ .Values.applicationSet.syncWaves.sealedSecrets | quote }}
-
+            namespace: sealed-secrets
+            chartName: sealed-secrets
+            chartRepo: https://bitnami-labs.github.io/sealed-secrets
+            chartVersion: 2.17.7
+            wave: "-1"
           - name: flashcards
-            type: git
-            repoURL: {{ .Values.applicationSet.components.flashcardsApp.gitRepo | quote }}
-            path: {{ .Values.applicationSet.components.flashcardsApp.path | quote }}
-            namespace: {{ .Values.applicationSet.components.flashcardsApp.namespace | quote }}
-            wave: {{ .Values.applicationSet.syncWaves.application | quote }}
+            namespace: apps
+            gitRepo: https://gitlab.com/portfolio5815640/flashcards-gitops.git
+            path: charts/flashcards
+            wave: "0"
 
   template:
     metadata:
-      # escape so Helm outputs {{ .name }} literally
-      name: {{ "{{ .name }}" }}
+      name: "platform-{{name}}"
       annotations:
-        argocd.argoproj.io/sync-wave: {{ "{{ .wave }}" }}
+        argocd.argoproj.io/sync-wave: "{{wave}}"
     spec:
-      project: {{ .Values.appProject.name | quote }}
+      project: portfolio-apps
       destination:
         server: https://kubernetes.default.svc
-        namespace: {{ "{{ .namespace }}" }}
+        namespace: "{{namespace}}"
       source:
-        {{ "{{- if eq .type \"helm\" }}" }}
-        repoURL: {{ "{{ .repoURL }}" }}
-        chart: {{ "{{ .chart }}" }}
-        targetRevision: {{ "{{ .version }}" }}
+        chart: "{{ chartName | default \"\" }}"
+        repoURL: "{{ chartRepo | default gitRepo }}"
+        path: "{{ path | default \"\" }}"
+        targetRevision: "{{ chartVersion | default \"main\" }}"
         helm:
-          skipCrds: false
-        {{ "{{- else }}" }}
-        repoURL: {{ "{{ .repoURL }}" }}
-        targetRevision: main
-        path: {{ "{{ .path }}" }}
-        {{ "{{- end }}" }}
+          valueFiles:
+            - values.yaml
+          values: |
+            {{- if eq name "ingress-nginx" }}
+            controller:
+              extraArgs:
+                enable-ssl-passthrough: "true"
+            {{- end }}
+            {{- if eq name "sealed-secrets" }}
+            # (defaults)
+            {{- end }}
       syncPolicy:
         automated:
           prune: true
