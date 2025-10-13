@@ -36,10 +36,16 @@ spec:
   # Template for creating Application resources
   template:
     metadata:
-      name: '{{`{{name}}`}}'
+      name: '{{ .name }}'
       annotations:
-        # Sync wave controls deployment order (lower numbers deploy first)
-        argocd.argoproj.io/sync-wave: '{{`{{wave}}`}}'
+        {{- /* order: ingress(-2) -> sealed-secrets(-1) -> apps(0) */ -}}
+        {{- if eq .name "ingress-nginx" }}
+        argocd.argoproj.io/sync-wave: "{{ $.Values.applicationSet.syncWaves.ingressNginx }}"
+        {{- else if eq .name "sealed-secrets" }}
+        argocd.argoproj.io/sync-wave: "{{ $.Values.applicationSet.syncWaves.sealedSecrets }}"
+        {{- else }}
+        argocd.argoproj.io/sync-wave: "{{ $.Values.applicationSet.syncWaves.application }}"
+        {{- end }}
     
     spec:
       # Use the portfolio-apps project we created
