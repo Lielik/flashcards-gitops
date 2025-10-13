@@ -4,7 +4,6 @@ metadata:
   name: platform-and-apps
   namespace: argocd
 spec:
-  goTemplate: true
   generators:
     - list:
         elements:
@@ -28,37 +27,37 @@ spec:
 
   template:
     metadata:
-      # Helm must pass Argo's template through verbatim:
-      name: 'platform-{{`{{ .name }}`}}'
+      # Emit the Application name literally for Argo (not Helm):
+      name: 'platform-{{`{{name}}`}}'
       annotations:
-        argocd.argoproj.io/sync-wave: '{{`{{ .wave }}`}}'
+        argocd.argoproj.io/sync-wave: '{{`{{wave}}`}}'
     spec:
       project: portfolio-apps
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{`{{ .namespace }}`}}'
+        namespace: '{{`{{namespace}}`}}'
 
-      # Choose source type based on whether chartName is provided
+      # If chartName is set => Helm chart; else => Git path
       source:
-        {{`{{- if .chartName }}`}}
-        repoURL: '{{`{{ .chartRepo }}`}}'
-        chart: '{{`{{ .chartName }}`}}'
-        targetRevision: '{{`{{ .chartVersion }}`}}'
+        {{`{{- if chartName }}`}}
+        repoURL: '{{`{{chartRepo}}`}}'
+        chart: '{{`{{chartName}}`}}'
+        targetRevision: '{{`{{chartVersion}}`}}'
         helm:
           valueFiles:
             - values.yaml
           values: |
-            {{`{{- if eq .name "ingress-nginx" }}`}}
+            {{`{{- if eq name "ingress-nginx" }}`}}
             controller:
               extraArgs:
                 enable-ssl-passthrough: "true"
             {{`{{- end }}`}}
-            {{`{{- if eq .name "sealed-secrets" }}`}}
+            {{`{{- if eq name "sealed-secrets" }}`}}
             # (defaults)
             {{`{{- end }}`}}
         {{`{{- else }}`}}
-        repoURL: '{{`{{ .gitRepo }}`}}'
-        path: '{{`{{ .path }}`}}'
+        repoURL: '{{`{{gitRepo}}`}}'
+        path: '{{`{{path}}`}}'
         targetRevision: 'main'
         helm:
           valueFiles:
