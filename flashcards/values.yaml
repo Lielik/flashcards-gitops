@@ -121,6 +121,7 @@ mongodb:
   auth:
     enabled: true
     rootUser: root
+    usernames: ["flashcards-user"]
     databases: ["flashcards"]
     existingSecret: mongodb-auth
     
