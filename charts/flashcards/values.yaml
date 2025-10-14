@@ -102,13 +102,6 @@ flashcards-app:
 mongodb:
   enabled: true
   
-  # MongoDB image
-  image:
-    registry: docker.io
-    repository: mongo
-    tag: "7.0"
-    pullPolicy: IfNotPresent
-  
   # Resource configuration
   resources:
     requests:
@@ -121,22 +114,16 @@ mongodb:
   # Persistence configuration
   persistence:
     enabled: true
-    storageClass: "gp2"  # AWS EBS GP2
-    size: 10Gi
+    storageClass: "gp3"  # AWS EBS GP2
+    size: 1Gi
     accessMode: ReadWriteOnce
   
-  # Service configuration
-  service:
-    type: ClusterIP
-    port: 27017
-    targetPort: 27017
-    name: mongodb-service
-  
-  # MongoDB configuration
-  config:
-    database: "flashcards"
-  
-  # Sealed secret for MongoDB credentials
+  auth:
+    enabled: true
+    rootUser: root
+    databases: ["flashcards"]
+    existingSecret: mongodb-auth
+    
   sealedSecret:
     enabled: true
     name: mongo-credentials

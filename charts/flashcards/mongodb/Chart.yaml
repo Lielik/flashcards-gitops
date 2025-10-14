@@ -1,6 +1,0 @@
-apiVersion: v2
-name: mongodb
-description: MongoDB database for Flashcards application
-type: application
-version: 1.0.0
-appVersion: "7.0"

@@ -1,0 +1,121 @@
+# ==========================================================
+# ArgoCD Umbrella Chart Values
+# ==========================================================
+# This file configures both the official ArgoCD chart and 
+# our custom configuration subchart
+
+# Global values that can be used by all subcharts
+global:
+  domain: "argocd.portfolio.com"
+
+# ==========================================================
+# Official ArgoCD Chart Configuration
+# ==========================================================
+argo-cd:
+  enabled: true
+  
+  global:
+    image:
+      tag: v3.1.8
+  
+  crds:
+    install: true
+  
+  applicationSet:
+    enabled: true
+  
+  server:
+    # Add these CORS settings
+    extraArgs:
+      - --insecure
+    
+    # Add this config section
+    config:
+      # Allow CORS from the LoadBalancer URL
+      cors.enabled: true
+      cors.allowed.origins: "*"  # For development - restrict in production
+    
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      hosts:
+        - argocd.portfolio.com
+      tls:
+        - secretName: argocd-server-tls
+          hosts:
+            - argocd.portfolio.com
+      annotations:
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        # Add CORS annotations for Ingress
+        nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+        nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+        nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+        nginx.ingress.kubernetes.io/enable-cors: "true"
+
+  redis:
+    enabled: true
+
+  repoServer:
+    replicas: 1
+
+# ==========================================================
+# Custom ArgoCD Configuration Subchart
+# ==========================================================
+argocd-config:
+  enabled: true
+  
+  # GitOps repository configuration
+  gitopsRepo:
+    url: "https://gitlab.com/portfolio5815640/flashcards-gitops.git"
+    # Credentials will be provided by sealed secret
+  
+  # ApplicationSet configuration
+  applicationSet:
+    # Sync wave for platform components
+    syncWaves:
+      ingressNginx: "-2"
+      sealedSecrets: "-1"
+      application: "0"
+    
+    # Platform component versions
+    components:
+      ingressNginx:
+        chartRepo: "https://kubernetes.github.io/ingress-nginx"
+        chartName: "ingress-nginx"
+        chartVersion: "4.13.3"
+        namespace: "ingress-nginx"
+      
+      sealedSecrets:
+        chartRepo: "https://bitnami-labs.github.io/sealed-secrets"
+        chartName: "sealed-secrets"
+        chartVersion: "2.17.7"
+        namespace: "sealed-secrets"
+      
+      flashcardsApp:
+        gitRepo: "https://gitlab.com/portfolio5815640/flashcards-gitops.git"
+        path: "charts/flashcards"
+        namespace: "apps"
+
+  # AppProject configuration
+  appProject:
+    name: "portfolio-apps"
+    description: "Flashcards app and dependencies"
+    sourceRepos:
+      - "https://gitlab.com/portfolio5815640/flashcards-gitops.git"
+      - "https://argoproj.github.io/argo-helm"
+      - "https://charts.bitnami.com/bitnami"
+      - "https://kubernetes.github.io/ingress-nginx"
+      - "https://bitnami-labs.github.io/sealed-secrets"
+    destinations:
+      - namespace: "argocd"
+      - namespace: "apps"
+      - namespace: "databases"
+      - namespace: "ingress-nginx"
+      - namespace: "sealed-secrets"
+
+
+
+
+
+
