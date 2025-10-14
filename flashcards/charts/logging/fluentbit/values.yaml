@@ -1,0 +1,118 @@
+# for authentication to Elasticsearch
+env:
+  - name: ES_USER
+    value: "elastic"
+  - name: ES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: elastic-password
+        key: password
+
+
+config:
+  # global settings for Fluent Bit
+  service: |
+    [SERVICE]
+        Daemon        Off # To be managed by Kubernetes properly
+        Flush         10 # Send buffered logs to outputs every 10 seconds
+        Log_Level     info # Errors + warnings + general information
+        Parsers_File  /fluent-bit/etc/parsers.conf
+        Parsers_File  /fluent-bit/etc/conf/custom_parsers.conf
+        # enables different endpoint for k8s to check if fluentbit is healthy
+        HTTP_Server   On 
+        HTTP_Listen   0.0.0.0
+        HTTP_Port     2020 # convention
+        Health_Check  On # endpoint for Kubernetes health checks
+
+  # where to get logs from
+  inputs: |
+    [INPUT]
+        Name              tail # like `tail -F` command
+        Path              /var/log/containers/*log # all container logs
+        Parser            cri # splits container log lines into fields (time, stream, log)
+        Tag               kube.* # tag logs so filters/outputs can match them
+        Refresh_Interval  10 # check for new files every 10 seconds
+        Read_From_Head    On # read all logs from beginning (not only lines that were written after fluentbit started running)
+        Skip_Long_Lines   On # skip lines longer than buffer size with warning
+        Mem_Buf_Limit     50MB # max memory to use for buffering logs
+
+  # modifies/enriches logs before sending them out
+  filters: |
+    # Kubernetes Metadata Filter
+    [FILTER]
+        Name                kubernetes # adds k8s metadata (pod name, namespace, labels, etc)
+        Match               kube.* # apply to all logs with "kube." prefix in their tag
+        # k8s metadata log modifications
+        Merge_Log           On
+        Keep_Log            Off # remove original log line after parsing it into JSON
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
+        Labels              Off
+        Annotations         Off
+    
+    # # Rando App Parser Filter
+    # [FILTER]
+    #     Name          parser # use parser filter
+    #     Match         kube.*rando* # apply to logs from rando app only
+    #     Key_Name      message # field to parse (the main log line)
+    #     Parser        rando_json # use the rando_json parser defined below
+    #     Reserve_Data  On # keep original log line in record
+    #     Preserve_Key  On # keep the "message" field after parsing
+
+    # # MongoDB Parser Filter
+    # [FILTER]
+    #     Name          parser
+    #     Match         kube.*mongo*
+    #     Key_Name      message
+    #     Parser        mongodb_json
+    #     Reserve_Data  On
+    #     Preserve_Key  On
+
+    # # Nginx Ingress Parser Filter
+    # [FILTER]
+    #     Name          parser
+    #     Match         kube.*
+    #     Key_Name      message
+    #     Parser        nginx_ingress
+    #     Reserve_Data  On
+    #     Preserve_Key  On
+    #     Unescape_Key  Off # doesnt change field names with escape characters (remote_addr, etc)
+
+  # where to send the logs
+  outputs: |
+    [OUTPUT]
+        Name            es # send logs to Elasticsearch
+        Match           kube.* # send logs with "kube." prefix in their tag (all logs here)
+        Host            elasticsearch-master.logging.svc.cluster.local
+        Port            9200 # ES port
+        HTTP_User       ${ES_USER} # uses the env variable defined above
+        HTTP_Passwd     ${ES_PASSWORD}
+        tls             On # use HTTPS
+        tls.verify      Off # Don't verify SSL certificates (for self-signed certs)
+        Logstash_Format On # Create daily indices like "logstash-2024.09.27"
+        Logstash_Prefix logstash # index prefix "logstash-YYYY.MM.DD"
+        Suppress_Type_Name On # remove the "_type" field (deprecated in ES 7+)
+        Retry_Limit     3 # retry up to 3 times to send logs
+
+  # customParsers: |
+  #   # parser for nginx ingress logs
+  #   [PARSER]
+  #       Name        nginx_ingress 
+  #       Format      regex # nginx writes plain text logs
+  #       Regex       ^(?<remote_addr>[^ ]*) - (?<remote_user>[^ ]*) \[(?<time_local>[^\]]+)\] "(?<method>[A-Z]+) (?<path>[^ ]+) (?<protocol>[^"]+)" (?<status>\d{3}) (?<body_bytes_sent>\d+) "(?<http_referer>[^"]*)" "(?<http_user_agent>[^"]*)" (?<request_length>\d+) (?<request_time>[\d\.]+) \[(?<proxy_upstream_name>[^\]]*)\] \[(?<alt_upstream_name>[^\]]*)\] (?<upstream_addr>[^ ]*) (?<upstream_response_bytes>\d+) (?<upstream_response_time>[\d\.]+) (?<upstream_status>\d{3}) (?<request_id>[A-Za-z0-9]+)
+  #       Time_Key    time_local # use the "time_local" field as the timestamp
+  #       Time_Format %d/%b/%Y:%H:%M:%S %z
+
+  #   # parser for rando app logs
+  #   [PARSER]
+  #       Name        rando_json
+  #       Format      json
+  #       Time_Key    time # field in the log that contains the timestamp
+  #       Time_Format %Y-%m-%dT%H:%M:%S.%LZ
+
+  #   # parser for mongodb logs
+  #   [PARSER]
+  #       Name        mongodb_json
+  #       Format      json
+  #       Time_Key    t.$date
+  #       Time_Format %Y-%m-%dT%H:%M:%S.%L%z
