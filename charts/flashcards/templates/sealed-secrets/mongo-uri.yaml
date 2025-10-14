@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: mongo-uri
-  namespace: apps
-type: Opaque
-stringData:
-  uri: "mongodb://root:rootpassword@mongodb.apps.svc.cluster.local:27017/flashcards?authSource=admin"

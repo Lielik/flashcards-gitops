@@ -16,3 +16,5 @@ secrets-temp/
 # Logs or temporary files (if any)
 *.log
 tmp/
+
+**/sealed-secrets/**
