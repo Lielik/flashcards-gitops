@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: flashcards-api
-        image: "{{ .Values.flashcards.image.registry }}/{{ .Values.flashcards.image.repository }}:{{ .Values.flashcards.image.tag }}"
+        image: "{{ .Values.flashcards.image.registry }}/{{ .Values.flashcards.image.repository }}:{{ .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.flashcards.image.pullPolicy }}
         
         ports:

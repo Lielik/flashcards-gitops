@@ -9,7 +9,6 @@ global:
   image:
     registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
     repository: "flashcards-app"
-    tag: "latest"
     pullPolicy: Always
   
   # MongoDB connection details
@@ -32,7 +31,6 @@ flashcards:
   image:
     registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
     repository: "flashcards-app"
-    tag: "latest"
     pullPolicy: Always
   
   # Resource limits and requests
