@@ -114,7 +114,7 @@ mongodb:
   # Persistence configuration
   persistence:
     enabled: true
-    storageClass: "gp3"  # AWS EBS GP2
+    storageClass: "gp2"  # AWS EBS GP2
     size: 1Gi
     accessMode: ReadWriteOnce
   
