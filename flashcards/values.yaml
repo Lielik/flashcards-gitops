@@ -22,7 +22,7 @@ global:
 # ==========================================================
 # Flashcards Application Configuration
 # ==========================================================
-flashcards-app:
+flashcards:
   enabled: true
   
   # Deployment configuration

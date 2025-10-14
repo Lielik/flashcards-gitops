@@ -1,20 +1,20 @@
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.flashcards.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "flashcards-app.fullname" . }}
-  namespace: {{ .Values.namespace | default "apps" }}
+  namespace: {{ .Values.flashcards.namespace | default "apps" }}
   labels:
     {{- include "flashcards-app.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- with .Values.flashcards.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.ingress.className }}
-  {{- if .Values.ingress.tls }}
+  ingressClassName: {{ .Values.flashcards.ingress.className }}
+  {{- if .Values.flashcards.ingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
+    {{- range .Values.flashcards.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -23,7 +23,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
+    {{- range .Values.flashcards.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -34,7 +34,7 @@ spec:
               service:
                 name: {{ include "flashcards-app.fullname" $ }}
                 port:
-                  number: {{ $.Values.service.port }}
+                  number: {{ $.Values.flashcards.service.port }}
           {{- end }}
     {{- end }}
 {{- end }}

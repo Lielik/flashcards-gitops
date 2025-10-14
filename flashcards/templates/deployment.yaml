@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "flashcards-app.fullname" . }}
-  namespace: {{ .Values.namespace | default "apps" }}
+  namespace: {{ .Values.flashcards.namespace | default "apps" }}
   labels:
     {{- include "flashcards-app.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.flashcards.replicaCount }}
   selector:
     matchLabels:
       {{- include "flashcards-app.selectorLabels" . | nindent 6 }}
@@ -17,17 +17,17 @@ spec:
     spec:
       containers:
       - name: flashcards-api
-        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.flashcards.image.registry }}/{{ .Values.flashcards.image.repository }}:{{ .Values.flashcards.image.tag }}"
+        imagePullPolicy: {{ .Values.flashcards.image.pullPolicy }}
         
         ports:
         - name: http
-          containerPort: {{ .Values.service.targetPort }}
+          containerPort: {{ .Values.flashcards.service.targetPort }}
           protocol: TCP
         
         # Environment variables
         env:
-        {{- range .Values.env }}
+        {{- range .Values.flashcards.env }}
         - name: {{ .name }}
           value: {{ .value | quote }}
         {{- end }}
@@ -36,25 +36,25 @@ spec:
         - name: MONGO_URI
           valueFrom:
             secretKeyRef:
-              name: {{ .Values.sealedSecret.name }}
+              name: {{ .Values.flashcards.sealedSecret.name }}
               key: uri
         
         # Liveness probe - checks if container is alive
-        {{- if .Values.livenessProbe }}
+        {{- if .Values.flashcards.livenessProbe }}
         livenessProbe:
-          {{- toYaml .Values.livenessProbe | nindent 10 }}
+          {{- toYaml .Values.flashcards.livenessProbe | nindent 10 }}
         {{- end }}
         
         # Readiness probe - checks if container is ready to serve traffic
-        {{- if .Values.readinessProbe }}
+        {{- if .Values.flashcards.readinessProbe }}
         readinessProbe:
-          {{- toYaml .Values.readinessProbe | nindent 10 }}
+          {{- toYaml .Values.flashcards.readinessProbe | nindent 10 }}
         {{- end }}
         
         # Resource limits
-        {{- if .Values.resources }}
+        {{- if .Values.flashcards.resources }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}
+          {{- toYaml .Values.flashcards.resources | nindent 10 }}
         {{- end }}
 
 ---
