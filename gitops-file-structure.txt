@@ -1,0 +1,32 @@
+.
+├── flashcards
+│   ├── Chart.lock
+│   ├── charts
+│   │   ├── logging
+│   │   │   ├── elasticsearch
+│   │   │   │   ├── Chart.yaml
+│   │   │   │   └── values.yaml
+│   │   │   ├── fluentbit
+│   │   │   │   ├── Chart.yaml
+│   │   │   │   └── values.yaml
+│   │   │   └── kibana
+│   │   │       ├── Chart.yaml
+│   │   │       ├── templates
+│   │   │       │   └── kibana-ingress.yaml
+│   │   │       └── values.yaml
+│   │   └── mongodb-18.0.7.tgz
+│   ├── Chart.yaml
+│   ├── templates
+│   │   ├── deployment.yaml
+│   │   ├── ingress.yaml
+│   │   ├── sealed-mongo-auth.yaml
+│   │   ├── sealed-mongo-uri.yaml
+│   │   ├── sealed-secrets
+│   │   │   ├── elastic-password-secret.yaml
+│   │   │   ├── mongodb-auth.yaml
+│   │   │   └── mongo-uri.yaml
+│   │   └── service.yaml
+│   └── values.yaml
+└── gitops-file-structure.txt
+
+10 directories, 20 files
