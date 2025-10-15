@@ -68,7 +68,6 @@ kibana:
     kibana.yml: |
       server.basePath: "/kibana"
       server.rewriteBasePath: true
-      elasticsearch.ssl.verificationMode: none
 
   # Ingress for web access
   ingress:
