@@ -12,17 +12,6 @@ fluent-bit:
   
   # Configuration
   config:
-    # Where to send logs
-    outputs: |
-      [OUTPUT]
-          Name es
-          Match *
-          Host elasticsearch-master.logging.svc.cluster.local
-          Port 9200
-          Index fluent-bit
-          Type _doc
-          Retry_Limit 3
-          Suppress_Type_Name On
     
     # What logs to collect
     inputs: |
@@ -45,29 +34,35 @@ fluent-bit:
           Merge_Log On
           K8S-Logging.Parser On
           K8S-Logging.Exclude On
+    
+    # Where to send logs
+    outputs: |
+      [OUTPUT]
+          Name es
+          Match *
+          Host elasticsearch-master.logging.svc.cluster.local
+          Port 9200
+          Index fluent-bit
+          Type _doc
+          Retry_Limit 3
+          Suppress_Type_Name On
+          tls On
+          tls.verify Off # Disable TLS verification (for self-signed certs)
 
 kibana:
   enabled: true
   
   # Connect to Elasticsearch
-  elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
+  elasticsearchHosts: "https://elasticsearch-master.logging.svc.cluster.local:9200"
 
-  preDeleteJob:
-    enabled: false
-  preInstallJob:
-    enabled: false
-  # elasticsearch:
-  #   ssl:
-  #     enabled: false
-  
-  # Unset SSL environment variable that causes HTTPS expectation
-  # extraEnvVars:
-  #   - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
-  #     value: ""
-
-  # Prevent the Helm chart from mounting Elasticsearch certs
-  # extraVolumes: []
-  # extraVolumeMounts: []
+  extraVolumes:
+    - name: elastic-certs
+      secret:
+        secretName: elasticsearch-master-certs
+  extraVolumeMounts:
+    - name: elastic-certs
+      mountPath: /usr/share/kibana/config/certs
+      readOnly: true
 
   # Resource limits
   resources:
@@ -80,9 +75,11 @@ kibana:
   
   kibanaConfig:
     kibana.yml: |
+      elasticsearch.ssl.certificateAuthorities: /usr/share/kibana/config/certs/ca.crt
+      elasticsearch.ssl.verificationMode: certificate
+      server.ssl.enabled: false   # Kibana UI served over HTTP (Ingress handles HTTPS)
       server.basePath: "/kibana"
       server.rewriteBasePath: true
-      elasticsearch.ssl.verificationMode: none
 
   # Ingress for web access
   ingress:
@@ -91,10 +88,3 @@ kibana:
     paths:
       - path: /kibana
         pathType: Prefix
-
-  # Disable TLS and credentials if Elasticsearch security is off
-  extraEnvs:
-    - name: ELASTICSEARCH_USERNAME
-      value: ""
-    - name: ELASTICSEARCH_PASSWORD
-      value: ""
