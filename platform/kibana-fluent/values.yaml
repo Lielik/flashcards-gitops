@@ -53,18 +53,7 @@ kibana:
   enabled: true
   
   # Connect to Elasticsearch
-  elasticsearchHosts: "https://elasticsearch-master.logging.svc.cluster.local:9200"
-
-  createElasticsearchToken: false
-  
-  extraVolumes:
-    - name: elastic-certs
-      secret:
-        secretName: elasticsearch-master-certs
-  extraVolumeMounts:
-    - name: elastic-certs
-      mountPath: /usr/share/kibana/config/certs
-      readOnly: true
+  elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
 
   # Resource limits
   resources:
@@ -77,9 +66,6 @@ kibana:
   
   kibanaConfig:
     kibana.yml: |
-      elasticsearch.ssl.certificateAuthorities: /usr/share/kibana/config/certs/ca.crt
-      elasticsearch.ssl.verificationMode: certificate
-      server.ssl.enabled: false   # Kibana UI served over HTTP (Ingress handles HTTPS)
       server.basePath: "/kibana"
       server.rewriteBasePath: true
 
