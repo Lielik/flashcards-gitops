@@ -51,6 +51,11 @@ kibana:
   
   # Connect to Elasticsearch
   elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
+
+  preDeleteJob:
+    enabled: false
+  preInstallJob:
+    enabled: false
   # elasticsearch:
   #   ssl:
   #     enabled: false
