@@ -1,4 +1,4 @@
-replicas: 3
+replicas: 1
 
 esJavaOpts: "-Xmx512m -Xms512m"
 
