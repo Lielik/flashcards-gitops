@@ -1,5 +1,5 @@
 elasticsearch:
-  replicas: 1
+  replicas: 3
 
   esJavaOpts: "-Xmx512m -Xms512m"
 
@@ -14,4 +14,5 @@ elasticsearch:
   # Disable security for simplicity (no user/pass)
   esConfig:
     elasticsearch.yml: |
+      discovery.type: single-node
       xpack.security.enabled: false
