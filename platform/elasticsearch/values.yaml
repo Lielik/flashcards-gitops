@@ -17,3 +17,6 @@ elasticsearch:
     resources:
       requests:
         storage: 10Gi
+
+  podDisruptionBudget:
+    enabled: false

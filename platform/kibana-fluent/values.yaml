@@ -67,20 +67,20 @@ kibana:
       server.rewriteBasePath: true
       elasticsearch.ssl.verificationMode: none
 
-  extraInitContainers: |
-    - name: wait-for-elasticsearch
-      image: curlimages/curl:8.5.0
-      imagePullPolicy: IfNotPresent
-      command:
-        - sh
-        - -c
-        - |
-          echo "Waiting for Elasticsearch to be ready..."
-          until curl -s http://logging-stack-elasticsearch.logging.svc.cluster.local:9200/_cluster/health | grep -q '"status":"green"\|"status":"yellow"'; do
-            echo "Elasticsearch not ready yet, retrying in 10s..."
-            sleep 10
-          done
-          echo "Elasticsearch is ready! Kibana can start now."
+  # extraInitContainers: |
+  #   - name: wait-for-elasticsearch
+  #     image: curlimages/curl:8.5.0
+  #     imagePullPolicy: IfNotPresent
+  #     command:
+  #       - sh
+  #       - -c
+  #       - |
+  #         echo "Waiting for Elasticsearch to be ready..."
+  #         until curl -s http://logging-stack-elasticsearch.logging.svc.cluster.local:9200/_cluster/health | grep -q '"status":"green"\|"status":"yellow"'; do
+  #           echo "Elasticsearch not ready yet, retrying in 10s..."
+  #           sleep 10
+  #         done
+  #         echo "Elasticsearch is ready! Kibana can start now."
 
   # Ingress for web access
   ingress:
