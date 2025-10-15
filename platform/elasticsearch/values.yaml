@@ -1,22 +1,21 @@
-elasticsearch:
-  replicas: 3
+replicas: 3
 
-  esJavaOpts: "-Xmx512m -Xms512m"
+esJavaOpts: "-Xmx512m -Xms512m"
 
-  resources:
-    requests:
-      cpu: 500m
-      memory: 1Gi
-    limits:
-      cpu: 1000m
-      memory: 2Gi
-  
-  antiAffinity: "soft"
+resources:
+  requests:
+    cpu: 500m
+    memory: 1Gi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
 
-  secret:
-    enabled: true
-    password: "changeme" 
+antiAffinity: "soft"
 
-  esConfig:
-    elasticsearch.yml: |
-      xpack.security.enabled: true
+secret:
+  enabled: true
+  password: "changeme" 
+
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: true
