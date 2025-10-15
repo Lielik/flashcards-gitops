@@ -1,9 +1,8 @@
 elasticsearch:
   replicas: 1
-  minimumMasterNodes: 1
-  
+
   esJavaOpts: "-Xmx512m -Xms512m"
-  
+
   resources:
     requests:
       cpu: 500m
@@ -11,17 +10,16 @@ elasticsearch:
     limits:
       cpu: 1000m
       memory: 2Gi
-  
+
   volumeClaimTemplate:
-    accessModes:
-      - ReadWriteOnce
+    accessModes: ["ReadWriteOnce"]
     resources:
       requests:
         storage: 10Gi
 
   esConfig:
     elasticsearch.yml: |
-      xpack.security.enabled: false
       discovery.type: single-node
+      xpack.security.enabled: false
 
   createCert: false
