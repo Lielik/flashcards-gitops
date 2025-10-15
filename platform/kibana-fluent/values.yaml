@@ -55,9 +55,14 @@ kibana:
     ssl:
       enabled: false
   
+  # Unset SSL environment variable that causes HTTPS expectation
   extraEnvVars:
     - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
       value: ""
+
+  # Prevent the Helm chart from mounting Elasticsearch certs
+  extraVolumes: []
+  extraVolumeMounts: []
 
   # Resource limits
   resources:
