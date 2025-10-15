@@ -2,18 +2,6 @@
 ├── flashcards
 │   ├── Chart.lock
 │   ├── charts
-│   │   ├── logging
-│   │   │   ├── elasticsearch
-│   │   │   │   ├── Chart.yaml
-│   │   │   │   └── values.yaml
-│   │   │   ├── fluentbit
-│   │   │   │   ├── Chart.yaml
-│   │   │   │   └── values.yaml
-│   │   │   └── kibana
-│   │   │       ├── Chart.yaml
-│   │   │       ├── templates
-│   │   │       │   └── kibana-ingress.yaml
-│   │   │       └── values.yaml
 │   │   └── mongodb-18.0.7.tgz
 │   ├── Chart.yaml
 │   ├── templates
@@ -29,4 +17,4 @@
 │   └── values.yaml
 └── gitops-file-structure.txt
 
-10 directories, 20 files
+5 directories, 13 files

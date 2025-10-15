@@ -18,3 +18,5 @@ secrets-temp/
 tmp/
 
 **/sealed-secrets/**
+
+*/charts/*.tgz
