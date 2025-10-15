@@ -10,11 +10,11 @@ fluent-bit:
       cpu: 200m
       memory: 256Mi
   
-  env:
-  - name: ES_USER
-    value: "elastic"
-  - name: ES_PASSWORD
-    value: "changeme"
+  # env:
+  # - name: ES_USER
+  #   value: "elastic"
+  # - name: ES_PASSWORD
+  #   value: "changeme"
 
   # Configuration
   config:
