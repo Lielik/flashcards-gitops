@@ -114,7 +114,7 @@ kibana:
           echo "Elasticsearch is ready! Kibana can start now."
 
   # Ingress for web access
-    ingress:
+  ingress:
     enabled: true
     className: nginx
     paths:
