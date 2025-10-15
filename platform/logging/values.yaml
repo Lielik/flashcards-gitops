@@ -85,6 +85,26 @@ kibana:
       cpu: 500m
       memory: 1Gi
   
+ # NEW - Disable pre-install hook
+  lifecycle:
+    preStop:
+      exec:
+        command: ["/bin/sh", "-c", "sleep 5"]
+  
+  # NEW - Add init container to wait for Elasticsearch
+  extraInitContainers:
+    - name: wait-for-elasticsearch
+      image: curlimages/curl:latest
+      command:
+        - sh
+        - -c
+        - |
+          until curl -s http://logging-stack-elasticsearch.logging.svc.cluster.local:9200/_cluster/health | grep -q '"status":"green"\|"status":"yellow"'; do
+            echo "Waiting for Elasticsearch..."
+            sleep 5
+          done
+          echo "Elasticsearch is ready!"
+
   # Ingress for web access
   ingress:
     enabled: true
