@@ -1,7 +1,6 @@
 fluent-bit:
   enabled: true
   
-  # Resource limits for each Fluent Bit pod
   resources:
     requests:
       cpu: 100m
@@ -10,10 +9,7 @@ fluent-bit:
       cpu: 200m
       memory: 256Mi
   
-  # Configuration
   config:
-    
-    # What logs to collect
     inputs: |
       [INPUT]
           Name tail
@@ -23,7 +19,6 @@ fluent-bit:
           Mem_Buf_Limit 5MB
           Skip_Long_Lines On
     
-    # Parse and enrich logs
     filters: |
       [FILTER]
           Name kubernetes
@@ -35,7 +30,7 @@ fluent-bit:
           K8S-Logging.Parser On
           K8S-Logging.Exclude On
     
-    # Where to send logs
+    # No authentication needed since security is disabled
     outputs: |
       [OUTPUT]
           Name es
@@ -46,16 +41,14 @@ fluent-bit:
           Type _doc
           Retry_Limit 3
           Suppress_Type_Name On
-          tls On
-          tls.verify Off # Disable TLS verification (for self-signed certs)
 
+---
 kibana:
   enabled: true
   
-  # Connect to Elasticsearch
+  # HTTP connection (no TLS)
   elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
 
-  # Resource limits
   resources:
     requests:
       cpu: 200m
@@ -69,7 +62,6 @@ kibana:
       server.basePath: "/kibana"
       server.rewriteBasePath: true
 
-  # Ingress for web access
   ingress:
     enabled: true
     className: nginx

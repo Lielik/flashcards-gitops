@@ -10,6 +10,8 @@ elasticsearch:
     limits:
       cpu: 1000m
       memory: 2Gi
+  
+  antiAffinity: "soft"
 
   # Disable security for simplicity (no user/pass)
   esConfig:
