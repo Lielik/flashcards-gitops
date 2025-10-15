@@ -10,12 +10,6 @@ fluent-bit:
       cpu: 200m
       memory: 256Mi
   
-  # env:
-  # - name: ES_USER
-  #   value: "elastic"
-  # - name: ES_PASSWORD
-  #   value: "changeme"
-
   # Configuration
   config:
     # Where to send logs
@@ -23,7 +17,7 @@ fluent-bit:
       [OUTPUT]
           Name es
           Match *
-          Host logging-stack-elasticsearch.logging.svc.cluster.local
+          Host elasticsearch-master.logging.svc.cluster.local
           Port 9200
           Index fluent-bit
           Type _doc
@@ -57,18 +51,18 @@ kibana:
   
   # Connect to Elasticsearch
   elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
-  elasticsearch:
-    ssl:
-      enabled: false
+  # elasticsearch:
+  #   ssl:
+  #     enabled: false
   
   # Unset SSL environment variable that causes HTTPS expectation
-  extraEnvVars:
-    - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
-      value: ""
+  # extraEnvVars:
+  #   - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
+  #     value: ""
 
   # Prevent the Helm chart from mounting Elasticsearch certs
-  extraVolumes: []
-  extraVolumeMounts: []
+  # extraVolumes: []
+  # extraVolumeMounts: []
 
   # Resource limits
   resources:
@@ -92,3 +86,10 @@ kibana:
     paths:
       - path: /kibana
         pathType: Prefix
+
+  # Disable TLS and credentials if Elasticsearch security is off
+  extraEnvs:
+    - name: ELASTICSEARCH_USERNAME
+      value: ""
+    - name: ELASTICSEARCH_PASSWORD
+      value: ""

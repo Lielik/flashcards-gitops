@@ -1,6 +1,5 @@
 elasticsearch:
-  replicas: 3
-  minimumMasterNodes: 2
+  replicas: 1
 
   esJavaOpts: "-Xmx512m -Xms512m"
 
@@ -13,12 +12,20 @@ elasticsearch:
       memory: 2Gi
 
   volumeClaimTemplate:
-    accessModes:
-      - ReadWriteOnce
+    accessModes: ["ReadWriteOnce"]
     resources:
       requests:
         storage: 10Gi
 
+  extraEnvs:
+    - name: cluster.initial_master_nodes
+      value: ""
+    - name: discovery.seed_hosts
+      value: ""
+
   esConfig:
     elasticsearch.yml: |
+      discovery.type: single-node
       xpack.security.enabled: false
+
+  createCert: false
