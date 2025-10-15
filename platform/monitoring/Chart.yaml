@@ -1,0 +1,10 @@
+apiVersion: v2
+name: monitoring-stack
+description: Prometheus and Grafana monitoring stack
+type: application
+version: 1.0.0
+
+dependencies:
+  - name: kube-prometheus-stack
+    version: 78.2.1
+    repository: https://prometheus-community.github.io/helm-charts
