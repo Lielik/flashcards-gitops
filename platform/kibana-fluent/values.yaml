@@ -12,7 +12,6 @@ fluent-bit:
       cpu: 200m
       memory: 256Mi
   
-  # Environment variable for Elasticsearch password
   env:
     - name: ES_PASSWORD
       valueFrom:
@@ -21,7 +20,6 @@ fluent-bit:
           key: password
   
   config:
-    # Collect logs from Kubernetes containers
     inputs: |
       [INPUT]
           Name tail
@@ -31,7 +29,6 @@ fluent-bit:
           Mem_Buf_Limit 5MB
           Skip_Long_Lines On
     
-    # Enrich logs with Kubernetes metadata
     filters: |
       [FILTER]
           Name kubernetes
@@ -43,7 +40,6 @@ fluent-bit:
           K8S-Logging.Parser On
           K8S-Logging.Exclude On
     
-    # Send logs to Elasticsearch with authentication
     outputs: |
       [OUTPUT]
           Name es
@@ -66,13 +62,15 @@ fluent-bit:
 kibana:
   enabled: true
   
-  # Connect to Elasticsearch with HTTPS
   elasticsearchHosts: "https://elasticsearch-master.logging.svc.cluster.local:9200"
   
-  # Use credentials from Kubernetes secret
-  elasticsearchCredentialSecret: elasticsearch-master-credentials
+  # CRITICAL FIX: Disable the token creation hook
+  createElasticsearchToken: false
   
-  # Mount Elasticsearch certificates for TLS verification
+  # Use username/password authentication instead of tokens
+  elasticsearchUsername: elastic
+  elasticsearchPassword: changeme
+  
   extraVolumes:
     - name: elastic-certs
       secret:
@@ -91,7 +89,6 @@ kibana:
       cpu: 500m
       memory: 1Gi
   
-  # Kibana configuration
   kibanaConfig:
     kibana.yml: |
       elasticsearch.ssl.certificateAuthorities: /usr/share/kibana/config/certs/ca.crt
@@ -99,7 +96,6 @@ kibana:
       server.basePath: "/kibana"
       server.rewriteBasePath: true
   
-  # Expose Kibana via Nginx Ingress
   ingress:
     enabled: true
     className: nginx
