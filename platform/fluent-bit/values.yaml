@@ -19,7 +19,7 @@ config:
         Name tail
         Path /var/log/containers/*.log
         Parser docker
-      Tag kube.*
+        Tag kube.*
         Mem_Buf_Limit 5MB
         Skip_Long_Lines On
   
@@ -38,7 +38,7 @@ config:
     [OUTPUT]
         Name es
         Match *
-        Host elasticsearch-master.logging.svc.cluster.local
+        Host elasticsearch-master
         Port 9200
         HTTP_User elastic
         HTTP_Passwd ${ES_PASSWORD}
