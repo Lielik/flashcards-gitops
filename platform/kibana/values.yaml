@@ -16,3 +16,12 @@ resources:
   limits:
     cpu: "1"
     memory: "1Gi"
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: kibana.local
+      paths:
+        - path: /
+          pathType: Prefix

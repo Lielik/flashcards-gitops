@@ -2,10 +2,7 @@ env:
   - name: ES_USER
     value: "elastic"
   - name: ES_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: elastic-password
-        key: password
+    value: "changeme" 
 
 config:
   inputs: |
