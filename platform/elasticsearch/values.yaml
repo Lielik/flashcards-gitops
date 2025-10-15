@@ -19,9 +19,6 @@ elasticsearch:
       requests:
         storage: 10Gi
 
-  podDisruptionBudget:
-    enabled: false
-
   esConfig:
     elasticsearch.yml: |
       xpack.security.enabled: false
