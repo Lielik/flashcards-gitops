@@ -1,48 +1,30 @@
 elasticsearch:
-  # replicas: 1
-  # minimumMasterNodes: 1
-
-  # esJavaOpts: "-Xmx512m -Xms512m"
+  replicas: 1
+  minimumMasterNodes: 1
   
-  # resources:
-  #   requests:
-  #     cpu: 500m
-  #     memory: 1Gi
-  #   limits:
-  #     cpu: 1000m
-  #     memory: 2Gi
+  esJavaOpts: "-Xmx512m -Xms512m"
   
-  # volumeClaimTemplate:
-  #   accessModes:
-  #     - ReadWriteOnce
-  #   resources:
-  #     requests:
-  #       storage: 10Gi
-
-  # podDisruptionBudget:
-  #   enabled: false
-
-  # esConfig:
-  #   elasticsearch.yml: |
-  #     xpack.security.enabled: false
-  #     discovery.type: single-node
-
-  # createCert: false
-
-  replicas: 1 # Single StatefulSet replica for lab
-
-  resources: # Resource requests and limits for the pod
+  resources:
     requests:
-      cpu: "100m"
-      memory: "1Gi"
+      cpu: 500m
+      memory: 1Gi
     limits:
-      cpu: "1"
-      memory: "2Gi"
-
-  antiAffinity: "soft" # try to spread the pods apart, if you can't put them on the same one the same node, usefull for scale up.
-
-  volumeClaimTemplate: # Storage request for the ES data volume
-    accessModes: ["ReadWriteOnce"]
+      cpu: 1000m
+      memory: 2Gi
+  
+  volumeClaimTemplate:
+    accessModes:
+      - ReadWriteOnce
     resources:
       requests:
         storage: 10Gi
+
+  podDisruptionBudget:
+    enabled: false
+
+  esConfig:
+    elasticsearch.yml: |
+      xpack.security.enabled: false
+      discovery.type: single-node
+
+  createCert: false
