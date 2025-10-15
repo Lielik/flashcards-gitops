@@ -1,3 +1,6 @@
+# ============================================
+# Fluent Bit Configuration
+# ============================================
 fluent-bit:
   enabled: true
   
@@ -9,7 +12,16 @@ fluent-bit:
       cpu: 200m
       memory: 256Mi
   
+  # Environment variable for Elasticsearch password
+  env:
+    - name: ES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elasticsearch-master-credentials
+          key: password
+  
   config:
+    # Collect logs from Kubernetes containers
     inputs: |
       [INPUT]
           Name tail
@@ -19,6 +31,7 @@ fluent-bit:
           Mem_Buf_Limit 5MB
           Skip_Long_Lines On
     
+    # Enrich logs with Kubernetes metadata
     filters: |
       [FILTER]
           Name kubernetes
@@ -30,25 +43,46 @@ fluent-bit:
           K8S-Logging.Parser On
           K8S-Logging.Exclude On
     
-    # No authentication needed since security is disabled
+    # Send logs to Elasticsearch with authentication
     outputs: |
       [OUTPUT]
           Name es
           Match *
           Host elasticsearch-master.logging.svc.cluster.local
           Port 9200
+          HTTP_User elastic
+          HTTP_Passwd ${ES_PASSWORD}
           Index fluent-bit
           Type _doc
           Retry_Limit 3
           Suppress_Type_Name On
+          tls On
+          tls.verify Off
 
 ---
+# ============================================
+# Kibana Configuration
+# ============================================
 kibana:
   enabled: true
   
-  # HTTP connection (no TLS)
-  elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
-
+  # Connect to Elasticsearch with HTTPS
+  elasticsearchHosts: "https://elasticsearch-master.logging.svc.cluster.local:9200"
+  
+  # Use credentials from Kubernetes secret
+  elasticsearchCredentialSecret: elasticsearch-master-credentials
+  
+  # Mount Elasticsearch certificates for TLS verification
+  extraVolumes:
+    - name: elastic-certs
+      secret:
+        secretName: elasticsearch-master-certs
+  
+  extraVolumeMounts:
+    - name: elastic-certs
+      mountPath: /usr/share/kibana/config/certs
+      readOnly: true
+  
   resources:
     requests:
       cpu: 200m
@@ -57,11 +91,15 @@ kibana:
       cpu: 500m
       memory: 1Gi
   
+  # Kibana configuration
   kibanaConfig:
     kibana.yml: |
+      elasticsearch.ssl.certificateAuthorities: /usr/share/kibana/config/certs/ca.crt
+      elasticsearch.ssl.verificationMode: certificate
       server.basePath: "/kibana"
       server.rewriteBasePath: true
-
+  
+  # Expose Kibana via Nginx Ingress
   ingress:
     enabled: true
     className: nginx
