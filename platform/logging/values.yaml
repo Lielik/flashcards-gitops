@@ -85,7 +85,12 @@ kibana:
       cpu: 500m
       memory: 1Gi
   
-  # NEW - Add init container to wait for Elasticsearch
+  kibanaConfig:
+    kibana.yml: |
+      server.basePath: "/kibana"
+      server.rewriteBasePath: true
+      elasticsearch.ssl.verificationMode: none
+
   extraInitContainers: |
     - name: wait-for-elasticsearch
       image: curlimages/curl:8.5.0
@@ -102,13 +107,9 @@ kibana:
           echo "Elasticsearch is ready! Kibana can start now."
 
   # Ingress for web access
-  ingress:
+    ingress:
     enabled: true
     className: nginx
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-    hosts:
-      - host: kibana.local
-        paths:
-          - path: /
-            pathType: Prefix
+    paths:
+      - path: /kibana
+        pathType: Prefix
