@@ -24,5 +24,6 @@ elasticsearch:
   esConfig:
     elasticsearch.yml: |
       xpack.security.enabled: false
+      discovery.type: single-node
 
   createCert: false
