@@ -20,3 +20,9 @@ elasticsearch:
 
   podDisruptionBudget:
     enabled: false
+
+  esConfig:
+    elasticsearch.yml: |
+      xpack.security.enabled: false
+
+  createCert: false

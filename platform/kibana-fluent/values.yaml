@@ -55,6 +55,10 @@ kibana:
     ssl:
       enabled: false
   
+  extraEnvVars:
+    - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
+      value: ""
+
   # Resource limits
   resources:
     requests:
@@ -68,6 +72,7 @@ kibana:
     kibana.yml: |
       server.basePath: "/kibana"
       server.rewriteBasePath: true
+      elasticsearch.ssl.verificationMode: none
 
   # Ingress for web access
   ingress:
