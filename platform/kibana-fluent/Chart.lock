@@ -1,0 +1,9 @@
+dependencies:
+- name: fluent-bit
+  repository: https://fluent.github.io/helm-charts
+  version: 0.54.0
+- name: kibana
+  repository: https://helm.elastic.co
+  version: 8.5.1
+digest: sha256:2d833bcdfb0812d474c7de80acb3322436d3b33c522e8adc6df98839a1f31981
+generated: "2025-10-15T17:48:05.74349606+03:00"

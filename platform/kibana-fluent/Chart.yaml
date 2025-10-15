@@ -1,0 +1,14 @@
+apiVersion: v2
+name: kibana-fluent
+description: Kibana and Fluent Bit for logging visualization and collection
+type: application
+version: 1.0.0
+
+dependencies:
+  - name: fluent-bit
+    version: 0.54.0
+    repository: https://fluent.github.io/helm-charts
+  
+  - name: kibana
+    version: 8.5.1
+    repository: https://helm.elastic.co
