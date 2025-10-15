@@ -1,21 +1,17 @@
-replicas: 1
+replicas: 1 # Single StatefulSet replica for lab
 
-esJavaOpts: "-Xmx512m -Xms512m"
-
-resources:
+resources: # Resource requests and limits for the pod
   requests:
-    cpu: 500m
-    memory: 1Gi
+    cpu: "100m"
+    memory: "1Gi"
   limits:
-    cpu: 1000m
-    memory: 2Gi
+    cpu: "1"
+    memory: "2Gi"
 
-antiAffinity: "soft"
+antiAffinity: "soft" # try to spread the pods apart, if you can't put them on the same one the same node, usefull for scale up.
 
-secret:
-  enabled: true
-  password: "changeme" 
-
-esConfig:
-  elasticsearch.yml: |
-    xpack.security.enabled: true
+volumeClaimTemplate: # Storage request for the ES data volume
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 10Gi

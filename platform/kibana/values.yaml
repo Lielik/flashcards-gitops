@@ -1,33 +1,18 @@
-# Connection to Elasticsearch - SHORT HOSTNAME to match certificate
-elasticsearchHosts: "https://elasticsearch-master:9200"
+# The Elasticsearch service endpoint that Kibana connects to for reading/writing data.
+elasticsearchHosts: "https://elasticsearch-master:9200" # ES-k8s-service-name:default-ES-port
 
-# Use existing secrets
-elasticsearchCertificateSecret: elasticsearch-master-certs
-elasticsearchCertificateAuthoritiesFile: ca.crt
-elasticsearchCredentialSecret: elasticsearch-master-credentials
+# Accept self-signed ES cert in the lab
+kibanaConfig:
+  kibana.yml: |
+    elasticsearch.ssl.verificationMode: none
 
-# Resource limits - reduced for smaller cluster
+service:
+  type: ClusterIP #  Expose Kibana only inside the cluster because we use ingress
+
 resources:
   requests:
     cpu: "200m"
-    memory: "512Mi"
+    memory: "768Mi"
   limits:
-    cpu: "1000m"
+    cpu: "1"
     memory: "1Gi"
-
-# Kibana configuration
-kibanaConfig:
-  kibana.yml: |
-    server.basePath: "/kibana"
-    server.rewriteBasePath: true
-    elasticsearch.ssl.verificationMode: certificate
-
-# Ingress - enable and set path
-ingress:
-  enabled: true
-  className: "nginx"
-  pathtype: Prefix
-  hosts:
-    - host: ""
-      paths:
-        - path: /kibana
