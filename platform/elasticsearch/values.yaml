@@ -1,5 +1,4 @@
-replicas: 1 # Single StatefulSet replica for lab
-
+replicas: 1 # try again
 resources: # Resource requests and limits for the pod
   requests:
     cpu: "100m"
