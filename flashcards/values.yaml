@@ -72,7 +72,7 @@ flashcards:
     enabled: true
     className: nginx
     hosts:
-      - host: afb2bcfb71184eb58a7f6cf4bc4cbb2-3cfd0cc4eed1ae74.elb.ap-south-1.amazonaws.com
+      - host: ""
         paths:
           - path: /
             pathType: Prefix
