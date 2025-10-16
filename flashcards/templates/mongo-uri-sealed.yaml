@@ -1,0 +1,16 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: mongo-uri
+  namespace: apps
+spec:
+  encryptedData:
+    uri: AgAIC9PTF1aWBymGxIxkWuRp9XMBG6WTLnU9WDAQQwb+V/XMx+Mg8JruyJFEbAral4ZKbqEj+6itIVkrALWYnKnpzJ8txmouLq/kSHremKG5bSXND8OrceIW+yIL9sdp0rsvNwaelYB28CgR3tN0HHr+jC0PWcfMkOOvva3pGh4W4Icx9E9eDTzWVVAt/C0/odL5w7GpuqAyDLcH+oiEK9DP40uJbKuE/+dT0jNqyAWv+G1QcRZQv+dm65wiNlh+O9svpOhchNhMIJR14/NGsgWLYFiMSAjLTgdsS8gB72umlBprB5cVcbxHf1KeZiyGnoo05J4NPTH5WzztCbIbRBzHku/E+ZTGjGsJM+xT8OyfIDerb3zS/8lw9UX+5p9ePVzRGpzNCgY75Q/nCNjh1AuvcrNtgyfrMHNVJRUoFIFGJmQdZgd76cSV4x5IJ0s88UpobcGdLtg/dxgbb/q17N/8BgeEQPtANanyp88ufna5+dr0gazpSBYjO9MW5kR8b1KMVPJ+DicoKUnsuRMxfXxnvP3/d0y8w/wcPSPNPuWU4YVt4JgVFYYzDYc87cAVBW5M0KHgbkbPzXjfqwxN+st9QEPnKWITkVjAYQiJxo3MqOlb+eqE79edEXizlsZbIlaiR/iXgQvpfLLJMTRlgZGC3TIM/9nDK+uXxzH0tcXCsBvIZt65UXoahTtNSbZhDAnarZnnPttkS2quNLjkvGqiCUAXW8Z5dW30yLm/lhJsMHcr0Wyqs4HcxoJ4XShFOGRFkuTn0IoLdRqpojHzw2GpEZHln2+9fFXdXKWZr5nlMYvQ3/EsQkKpLCEefK4mJm52fTcWBkg=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: mongo-uri
+      namespace: apps
+    type: Opaque
