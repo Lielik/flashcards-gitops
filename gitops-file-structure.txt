@@ -15,6 +15,31 @@
 │   │   │   └── mongo-uri.yaml
 │   │   └── service.yaml
 │   └── values.yaml
-└── gitops-file-structure.txt
+├── gitops-file-structure.txt
+└── platform
+    ├── elasticsearch
+    │   ├── Chart.lock
+    │   ├── charts
+    │   │   └── elasticsearch-8.5.1.tgz
+    │   ├── Chart.yaml
+    │   └── values.yaml
+    ├── fluent-bit
+    │   ├── Chart.lock
+    │   ├── charts
+    │   │   └── fluent-bit-0.54.0.tgz
+    │   ├── Chart.yaml
+    │   └── values.yaml
+    ├── kibana
+    │   ├── Chart.lock
+    │   ├── charts
+    │   │   └── kibana-8.5.1.tgz
+    │   ├── Chart.yaml
+    │   └── values.yaml
+    └── monitoring
+        ├── Chart.lock
+        ├── charts
+        │   └── kube-prometheus-stack-78.2.1.tgz
+        ├── Chart.yaml
+        └── values.yaml
 
-5 directories, 13 files
+14 directories, 29 files

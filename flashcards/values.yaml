@@ -1,39 +1,28 @@
 # ==========================================================
 # Flashcards Umbrella Chart Values
 # ==========================================================
-# This configures both the application and MongoDB database
 
-# Global values accessible by all subcharts
+namespace: apps
+
+# Global values for MongoDB subchart compatibility
 global:
-  # Image configuration
-  image:
-    registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
-    repository: "flashcards-app"
-    pullPolicy: Always
-  
-  # MongoDB connection details
   mongodb:
     host: "mongodb-service.databases.svc.cluster.local"
     port: 27017
     database: "flashcards"
-    # Authentication credentials come from sealed secret
 
 # ==========================================================
-# Flashcards Application Configuration
+# Flask API Configuration
 # ==========================================================
-flashcards:
+api:
   enabled: true
-  
-  # Deployment configuration
   replicaCount: 2
   
-  # Image configuration (inherits from global)
   image:
     registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
     repository: "flashcards-app"
     pullPolicy: Always
   
-  # Resource limits and requests
   resources:
     requests:
       cpu: 100m
@@ -42,55 +31,46 @@ flashcards:
       cpu: 500m
       memory: 512Mi
   
-  # Health check configuration
-  livenessProbe:
-    httpGet:
-      path: /health
-      port: 5000
-    initialDelaySeconds: 30
-    periodSeconds: 10
-    timeoutSeconds: 5
-    failureThreshold: 3
-  
-  readinessProbe:
-    httpGet:
-      path: /health
-      port: 5000
-    initialDelaySeconds: 10
-    periodSeconds: 5
-    timeoutSeconds: 3
-    failureThreshold: 3
-  
-  # Service configuration
-  service:
-    type: ClusterIP
-    port: 5000
-    targetPort: 5000
-  
-  # Ingress configuration
-  ingress:
-    enabled: true
-    className: nginx
-    hosts:
-      - host: ""
-        paths:
-          - path: /
-            pathType: Prefix
-    tls:
-      []
-  
-  # Environment variables
   env:
     - name: PORT
       value: "5000"
     - name: DEBUG
       value: "false"
-    # MONGO_URI comes from sealed secret
   
-  # Sealed secret for MongoDB connection string
   sealedSecret:
     enabled: true
     name: mongo-uri
+
+# ==========================================================
+# NGINX Configuration
+# ==========================================================
+nginx:
+  enabled: true
+  replicaCount: 2
+  
+  image:
+    registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
+    repository: "flashcards-nginx"
+    pullPolicy: Always
+  
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  
+  ingress:
+    enabled: true
+    className: nginx
+    annotations: {}
+    hosts:
+      - host: ""
+        paths:
+          - path: /
+            pathType: Prefix
+    tls: []
 
 # ==========================================================
 # MongoDB Configuration
@@ -98,7 +78,6 @@ flashcards:
 mongodb:
   enabled: true
   
-  # Resource configuration
   resources:
     requests:
       cpu: 250m
@@ -107,10 +86,9 @@ mongodb:
       cpu: 1000m
       memory: 2Gi
   
-  # Persistence configuration
   persistence:
     enabled: true
-    storageClass: "gp2"  # AWS EBS GP3
+    storageClass: "gp2"
     size: 1Gi
     accessMode: ReadWriteOnce
   
@@ -125,7 +103,6 @@ mongodb:
     enabled: true
     name: mongo-credentials
   
-  # Health check configuration
   livenessProbe:
     exec:
       command:
@@ -147,9 +124,3 @@ mongodb:
     periodSeconds: 5
     timeoutSeconds: 3
     failureThreshold: 3
-
-
-
-
-
-

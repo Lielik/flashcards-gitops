@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "flashcards.fullname" . }}-nginx-config
+  namespace: {{ .Values.namespace | default "apps" }}
+  labels:
+    {{- include "flashcards.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        upstream flask_backend {
+            server {{ include "flashcards.fullname" . }}-api.{{ .Values.namespace | default "apps" }}.svc.cluster.local:5000;
+        }
+
+        server {
+            listen 80;
+
+            # Exact match for root - serve index.html
+            location = / {
+                root /usr/share/nginx/html;
+                try_files /index.html =404;
+                add_header X-From "nginx-root";
+            }
+
+            # All other paths - try static file, else proxy to Flask
+            location / {
+                root /usr/share/nginx/html;
+                try_files $uri @app;
+                add_header X-From "static-assets";
+            }
+            
+            location @app {
+                proxy_pass http://flask_backend;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr; 
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                add_header X-From "flask-backend";
+            }
+        }
+    }
+
+---
+{{- define "flashcards.fullname" -}}
+{{- .Chart.Name }}-{{ .Release.Name }}
+{{- end }}
+
+{{- define "flashcards.labels" -}}
+app.kubernetes.io/name: {{ .Chart.Name }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}

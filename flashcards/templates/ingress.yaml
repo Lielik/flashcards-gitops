@@ -1,20 +1,20 @@
-{{- if .Values.flashcards.ingress.enabled -}}
+{{- if .Values.nginx.ingress.enabled -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "flashcards-app.fullname" . }}
-  namespace: {{ .Values.flashcards.namespace | default "apps" }}
+  name: {{ include "flashcards.fullname" . }}
+  namespace: {{ .Values.namespace | default "apps" }}
   labels:
-    {{- include "flashcards-app.labels" . | nindent 4 }}
-  {{- with .Values.flashcards.ingress.annotations }}
+    {{- include "flashcards.labels" . | nindent 4 }}
+  {{- with .Values.nginx.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  ingressClassName: {{ .Values.flashcards.ingress.className }}
-  {{- if .Values.flashcards.ingress.tls }}
+  ingressClassName: {{ .Values.nginx.ingress.className }}
+  {{- if .Values.nginx.ingress.tls }}
   tls:
-    {{- range .Values.flashcards.ingress.tls }}
+    {{- range .Values.nginx.ingress.tls }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
@@ -23,7 +23,7 @@ spec:
     {{- end }}
   {{- end }}
   rules:
-    {{- range .Values.flashcards.ingress.hosts }}
+    {{- range .Values.nginx.ingress.hosts }}
     - host: {{ .host | quote }}
       http:
         paths:
@@ -32,20 +32,19 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ include "flashcards-app.fullname" $ }}
+                name: {{ include "flashcards.fullname" $ }}-nginx
                 port:
-                  number: {{ $.Values.flashcards.service.port }}
+                  number: 80
           {{- end }}
     {{- end }}
 {{- end }}
 
 ---
-# Helper template definitions
-{{- define "flashcards-app.fullname" -}}
+{{- define "flashcards.fullname" -}}
 {{- .Chart.Name }}-{{ .Release.Name }}
 {{- end }}
 
-{{- define "flashcards-app.labels" -}}
+{{- define "flashcards.labels" -}}
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
