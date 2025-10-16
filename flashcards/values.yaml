@@ -72,14 +72,12 @@ flashcards:
     enabled: true
     className: nginx
     hosts:
-      - host: flashcards.portfolio.com
+      - host: afb2bcfb71184eb58a7f6cf4bc4cbb2-3cfd0cc4eed1ae74.elb.ap-south-1.amazonaws.com
         paths:
           - path: /
             pathType: Prefix
     tls:
-      - secretName: flashcards-tls
-        hosts:
-          - flashcards.portfolio.com
+      []
   
   # Environment variables
   env:
