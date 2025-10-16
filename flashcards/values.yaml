@@ -7,7 +7,7 @@ namespace: apps
 # Global values for MongoDB subchart compatibility
 global:
   mongodb:
-    host: "mongodb-service.databases.svc.cluster.local"
+    host: "flashcards-mongodb.apps.svc.cluster.local"
     port: 27017
     database: "flashcards"
 
