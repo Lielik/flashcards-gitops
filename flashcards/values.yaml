@@ -4,7 +4,7 @@
 
 namespace: apps
 
-# Global values for MongoDB subchart compatibility
+# Global values for MongoDB subchart compatibility ----
 global:
   mongodb:
     host: "flashcards-mongodb.apps.svc.cluster.local"
