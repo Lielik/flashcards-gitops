@@ -1,0 +1,51 @@
+# This file contains values for the kube-prometheus-stack chart
+kube-prometheus-stack:
+  # Grafana Configuration
+  grafana:
+    enabled: true
+    
+    resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+    ingress:
+      enabled: false # default already``
+
+  # Prometheus Configuration
+  prometheus:
+    prometheusSpec:
+      # Allow Prometheus to discover all ServiceMonitors (not just labeled ones)
+      serviceMonitorSelectorNilUsesHelmValues: false
+
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 1Gi
+      
+      # Storage for metrics
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 10Gi
+
+  # Alertmanager Configuration
+  alertmanager:
+    enabled: true
+    alertmanagerSpec:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 100m
+          memory: 256Mi
