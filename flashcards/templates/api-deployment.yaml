@@ -17,6 +17,9 @@ spec:
       labels:
         {{- include "flashcards.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: api
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "5000"
     spec:
       containers:
       - name: flask-api
