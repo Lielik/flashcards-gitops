@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "flashcards.fullname" . }}-api
+  namespace: {{ .Values.namespace | default "apps" }}
+  labels:
+    {{- include "flashcards.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  selector:
+    matchLabels:
+      {{- include "flashcards.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: api
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+    scrapeTimeout: 10s
