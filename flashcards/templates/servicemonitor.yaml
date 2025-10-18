@@ -6,6 +6,7 @@ metadata:
   labels:
     {{- include "flashcards.labels" . | nindent 4 }}
     app.kubernetes.io/component: api
+    release: prometheus
 spec:
   selector:
     matchLabels:
