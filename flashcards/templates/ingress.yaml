@@ -1,4 +1,4 @@
-{{- if .Values.nginx.ingress.enabled -}}
+{{- if and .Values.nginx (and .Values.nginx.ingress .Values.nginx.ingress.enabled) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -6,12 +6,15 @@ metadata:
   namespace: {{ .Values.namespace | default "apps" }}
   labels:
     {{- include "flashcards.labels" . | nindent 4 }}
-  {{- with .Values.nginx.ingress.annotations }}
   annotations:
+    {{- if .Values.nginx.ingress.annotations }}
     {{- toYaml .Values.nginx.ingress.annotations | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
-  ingressClassName: {{ .Values.nginx.ingress.className }}
+  {{- if .Values.nginx.ingress.className }}
+  ingressClassName: {{ .Values.nginx.ingress.className | quote }}
+  {{- end }}
+
   {{- if .Values.nginx.ingress.tls }}
   tls:
     {{- range .Values.nginx.ingress.tls }}
@@ -19,9 +22,12 @@ spec:
         {{- range .hosts }}
         - {{ . | quote }}
         {{- end }}
+      {{- if .secretName }}
       secretName: {{ .secretName }}
+      {{- end }}
     {{- end }}
   {{- end }}
+
   rules:
     {{- range .Values.nginx.ingress.hosts }}
     - host: {{ .host | quote }}
@@ -37,16 +43,4 @@ spec:
                   number: 80
           {{- end }}
     {{- end }}
-{{- end }}
-
----
-{{- define "flashcards.fullname" -}}
-{{- .Chart.Name }}-{{ .Release.Name }}
-{{- end }}
-
-{{- define "flashcards.labels" -}}
-app.kubernetes.io/name: {{ .Chart.Name }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
