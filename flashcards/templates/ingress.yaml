@@ -8,7 +8,7 @@ metadata:
     {{- include "flashcards.labels" . | nindent 4 }}
   {{- with .Values.nginx.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- toYaml .Values.nginx.ingress.annotations | nindent 4 }}
   {{- end }}
 spec:
   ingressClassName: {{ .Values.nginx.ingress.className }}
