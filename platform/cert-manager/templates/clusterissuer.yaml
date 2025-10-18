@@ -18,5 +18,7 @@ spec:
             ingressTemplate:
               metadata:
                 annotations:
+                  alb.ingress.kubernetes.io/group.name: flashcards
+                  alb.ingress.kubernetes.io/group.order: "1"
                   alb.ingress.kubernetes.io/scheme: internet-facing
                   alb.ingress.kubernetes.io/target-type: ip
