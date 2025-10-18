@@ -30,12 +30,18 @@ spec:
         - name: http
           containerPort: 80
           protocol: TCP
+        - name: https                
+          containerPort: 443
+          protocol: TCP
         
-        # Mount the ConfigMap as a volume
+        # Mount the ConfigMap as a volume & TLS certificates
         volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
+          readOnly: true
+        - name: tls-certs            
+          mountPath: /etc/nginx/tls
           readOnly: true
         
         # Health probes
@@ -69,6 +75,9 @@ spec:
           items:
           - key: nginx.conf
             path: nginx.conf
+      - name: tls-certs              
+        secret:
+          secretName: flashcards-tls
 
 ---
 {{- define "flashcards.fullname" -}}

@@ -22,25 +22,38 @@ data:
 
         server {
             listen 80;
+            server_name flashcards.ddns.net;
+            return 301 https://$host$request_uri;
+        }
 
-            # Exact match for root - serve index.html
+        server {
+            listen 443 ssl;
+            server_name flashcards.ddns.net;
+
+            ssl_certificate     /etc/nginx/tls/tls.crt;
+            ssl_certificate_key /etc/nginx/tls/tls.key;
+
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_ciphers HIGH:!aNULL:!MD5;
+
+            # Serve static files
             location = / {
                 root /usr/share/nginx/html;
                 try_files /index.html =404;
                 add_header X-From "nginx-root";
             }
 
-            # All other paths - try static file, else proxy to Flask
+            # Static assets or backend proxy
             location / {
                 root /usr/share/nginx/html;
                 try_files $uri @app;
                 add_header X-From "static-assets";
             }
-            
+
             location @app {
                 proxy_pass http://flask_backend;
                 proxy_set_header Host $host;
-                proxy_set_header X-Real-IP $remote_addr; 
+                proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto $scheme;
                 add_header X-From "flask-backend";
