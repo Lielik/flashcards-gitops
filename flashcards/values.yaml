@@ -63,19 +63,17 @@ nginx:
   
   ingress:
     enabled: true
-    className: alb
-    annotations: 
-      kubernetes.io/ingress.class: alb
-      alb.ingress.kubernetes.io/scheme: internet-facing
-      alb.ingress.kubernetes.io/target-type: ip
-      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443},{"HTTP":80}]'
-      cert-manager.io/cluster-issuer: letsencrypt-prod
+    className: nginx
+    annotations:
+      kubernetes.io/ingress.class: "nginx"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     hosts:
       - host: flashcards.ddns.net
         paths:
           - path: /
             pathType: Prefix
-    tls: 
+    tls:
       - hosts:
           - flashcards.ddns.net
         secretName: flashcards-tls
