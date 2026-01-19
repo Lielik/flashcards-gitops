@@ -17,12 +17,12 @@ global:
 api:
   enabled: true
   replicaCount: 2
-  
+
   image:
-    registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
+    registry: "515214871063.dkr.ecr.ap-south-1.amazonaws.com"
     repository: "flashcards-app"
     pullPolicy: Always
-  
+
   resources:
     requests:
       cpu: 100m
@@ -30,60 +30,43 @@ api:
     limits:
       cpu: 500m
       memory: 512Mi
-  
+
   env:
     - name: PORT
       value: "5000"
     - name: DEBUG
       value: "false"
-  
+
   sealedSecret:
     enabled: true
     name: mongo-uri
 
 # ==========================================================
-# NGINX Configuration
+# Ingress Configuration
 # ==========================================================
-nginx:
+ingress:
   enabled: true
-  replicaCount: 2
-  
-  image:
-    registry: "473959757606.dkr.ecr.ap-south-1.amazonaws.com"
-    repository: "flashcards-nginx"
-    pullPolicy: Always
-  
-  resources:
-    requests:
-      cpu: 50m
-      memory: 64Mi
-    limits:
-      cpu: 200m
-      memory: 128Mi
-  
-  ingress:
-    enabled: true
-    className: nginx
-    annotations:
-      kubernetes.io/ingress.class: "nginx"
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    hosts:
-      - host: flashcards.ddns.net
-        paths:
-          - path: /
-            pathType: Prefix
-    tls:
-      - hosts:
-          - flashcards.ddns.net
-        secretName: flashcards-tls
+  className: nginx
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: flashcards.ddns.net
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - flashcards.ddns.net
+      secretName: flashcards-tls
 
 # ==========================================================
 # MongoDB Configuration
 # ==========================================================
 mongodb:
   enabled: true
-  
+
   resources:
     requests:
       cpu: 250m
@@ -91,24 +74,24 @@ mongodb:
     limits:
       cpu: 1000m
       memory: 2Gi
-  
+
   persistence:
     enabled: true
     storageClass: "gp2"
     size: 1Gi
     accessMode: ReadWriteOnce
-  
+
   auth:
     enabled: true
     rootUser: root
     usernames: ["flashcards-user"]
     databases: ["flashcards"]
     existingSecret: mongodb-auth
-    
+
   sealedSecret:
     enabled: true
     name: mongo-credentials
-  
+
   livenessProbe:
     exec:
       command:
@@ -119,7 +102,7 @@ mongodb:
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
-  
+
   readinessProbe:
     exec:
       command:
