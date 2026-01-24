@@ -19,7 +19,7 @@ api:
   replicaCount: 2
 
   image:
-    registry: "515214871063.dkr.ecr.ap-south-1.amazonaws.com"
+    registry: "515214871063.dkr.ecr.us-east-1.amazonaws.com"
     repository: "flashcards-app"
     pullPolicy: Always
 
