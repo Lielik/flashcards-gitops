@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sealed-secrets
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0" # Deploy FIRST before everything
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+
+  # Multiple sources - Helm chart + values from Git
+  sources:
+    # Source 1: Official Sealed Secrets Helm chart
+    - repoURL: https://bitnami-labs.github.io/sealed-secrets
+      chart: sealed-secrets
+      targetRevision: 2.16.2
+      helm:
+        releaseName: sealed-secrets-controller
+        valueFiles:
+          - $values/platform/sealed-secrets/values.yaml
+
+    # Source 2: Values from your Git repo
+    - repoURL: https://github.com/Lielik/flashcards-gitops
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false # kube-system already exists

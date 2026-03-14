@@ -17,8 +17,6 @@ secrets-temp/
 *.log
 tmp/
 
-**/sealed-secrets/**
-
 */charts/*.tgz
 
 gitops-repo-file-structure.txt
