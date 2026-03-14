@@ -5,15 +5,13 @@ metadata:
   namespace: argocd
 spec:
   project: default
-
-  # Point to the entire repository
   source:
     repoURL: https://github.com/Lielik/flashcards-gitops
     targetRevision: main
-    path: . # Root directory
+    path: .
     directory:
-      recurse: true # Find all Application manifests
-      include: "{platform,apps}/*.yaml" # Only these patterns
+      recurse: true
+      include: "{platform,apps}/*.yaml"
 
   destination:
     server: https://kubernetes.default.svc

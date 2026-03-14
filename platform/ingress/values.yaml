@@ -1,0 +1,40 @@
+controller:
+  # Use NodePort for self-hosted Kubernetes (Proxmox)
+  # Change to LoadBalancer if using cloud provider
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+
+  # Enable metrics for Prometheus
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: false # Enable when Prometheus is deployed
+
+  # Resource limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Replica count
+  replicaCount: 2
+
+  # Pod anti-affinity (spread across nodes)
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - ingress-nginx
+            topologyKey: kubernetes.io/hostname
