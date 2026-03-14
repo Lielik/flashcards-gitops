@@ -4,7 +4,7 @@ metadata:
   name: flashcards-api
   namespace: apps
   labels:
-    app: flashcards
+    app: flashcards-api
     component: api
 spec:
   type: ClusterIP
