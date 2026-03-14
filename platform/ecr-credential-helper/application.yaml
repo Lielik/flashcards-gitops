@@ -13,9 +13,10 @@ spec:
     path: platform/ecr-credential-helper
   destination:
     server: https://kubernetes.default.svc
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=false # No namespace needed for cluster-scoped resources
+      - CreateNamespace=false
