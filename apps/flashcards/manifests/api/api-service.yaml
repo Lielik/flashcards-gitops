@@ -14,5 +14,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: flashcards
+    app: flashcards-api
     component: api
