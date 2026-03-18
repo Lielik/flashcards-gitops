@@ -5,12 +5,10 @@ metadata:
   namespace: cloudflare
 data:
   config.yaml: |
-    tunnel: flashcards-k8s
+    tunnel: 5ffb05ca-7c50-4418-98c5-8a5b5f558010
     credentials-file: /etc/cloudflared/creds/credentials.json
     metrics: 0.0.0.0:2000
     no-autoupdate: true
-
     ingress:
-        service: http://flashcards-api.apps.svc.cluster.local:5000
-      # Catch-all rule
-      - service: http_status:404
+    - service: http://flashcards-api.apps.svc.cluster.local:5000
+    - service: http_status:404
