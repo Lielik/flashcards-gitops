@@ -10,5 +10,6 @@ data:
     metrics: 0.0.0.0:2000
     no-autoupdate: true
     ingress:
-      - service: http://flashcards-api.apps.svc.cluster.local:5000
+      - hostname: flashcards-temp.com
+        service: http://flashcards-api.apps.svc.cluster.local:5000
       - service: http_status:404
