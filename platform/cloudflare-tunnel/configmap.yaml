@@ -9,10 +9,10 @@ data:
     credentials-file: /etc/cloudflared/creds/credentials.json
     metrics: 0.0.0.0:2000
     no-autoupdate: true
-    
+
     ingress:
       # Route to Flask API
-      - hostname: flashcards-app.ddns.net
+      - hostname: flashcards-temp.com
         service: http://flashcards-api.apps.svc.cluster.local:5000
       # Catch-all rule
       - service: http_status:404
