@@ -4,3 +4,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 
 how to portforwad to argocd
 kubectl port-forward svc/argocd-server -n argocd 8080:80
+
+
+id 
+5ffb05ca-7c50-4418-98c5-8a5b5f558010

@@ -1,0 +1,15 @@
+the error:
+Failed to load target state: rpc error: connection error: 
+dial tcp 10.105.96.18:8081: connect: connection refused
+
+This is ArgoCD's repo-server crashing or unable to connect. This happened before after the cluster reboot.
+
+the solution:
+get the status of the pod - 
+kubectl get applications -n argocd
+
+the resion:
+argocd-repo-server-64f7bcbf77-vxkwq                 0/1     Unknown   0 
+
+the solution:
+kubectl delete pod -n argocd -l app.kubernetes.io/name=argocd-repo-server
