@@ -13,14 +13,14 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   ingressClassName: nginx
-  rules:
-    - host: flashcards-app.ddns.net
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: flashcards-api
-                port:
-                  number: 5000
+  spec:
+    rules:
+      - http:
+          paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: flashcards-api
+                  port:
+                    number: 5000
