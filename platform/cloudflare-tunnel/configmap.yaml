@@ -12,7 +12,7 @@ data:
 
     ingress:
       # Route to Flask API
-      - hostname: flashcards-temp.com
+      - hostname: flashcards-app.ddns.net
         service: http://flashcards-api.apps.svc.cluster.local:5000
       # Catch-all rule
       - service: http_status:404
