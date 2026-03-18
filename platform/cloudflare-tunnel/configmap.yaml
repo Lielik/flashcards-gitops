@@ -11,8 +11,6 @@ data:
     no-autoupdate: true
 
     ingress:
-      # Route to Flask API
-      - hostname: app.flashcards-temp.com
         service: http://flashcards-api.apps.svc.cluster.local:5000
       # Catch-all rule
       - service: http_status:404
